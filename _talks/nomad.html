@@ -1,0 +1,84 @@
+---
+title: Intro to Scheduling with Nomad
+date: 2017-09-08
+duration: 15
+---
+				<section>
+                    <h3>Intro to Scheduling with Nomad</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                    <h3>Agenda</h3>
+                    <ul>
+                        <li class="fragment">What is a scheduler?</li>
+                        <li class="fragment">Nomad compared to other schedulers</li>
+                        <li class="fragment">Demo</li>
+                    </ul>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>[servers:children]
+DC1
+DC2
+
+[DC1]
+10.1.1.101 node_num=1 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+10.1.1.102 node_num=2 roles='["pmaa"]'
+10.1.1.103 node_num=3 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+
+[DC1:vars]
+node_availability=available
+
+[DC2]
+10.1.2.104 node_num=4 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+10.1.2.105 node_num=5 roles='["pmaa"]'
+10.1.2.106 node_num=6 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+
+[DC2:vars]
+node_availability=unavailable
+
+[admin]
+localhost ansible_connection=local</code></pre>
+                </section>
+                <section class="center">
+                    <h3><em>Schedulers</em> allocate <em>resources</em> to nodes based on <em>constraints</em></h3>
+                </section>
+                <section class="center">
+                    <h3>Schedulers <em>monitor and reallocate</em> resources to nodes based on <em>health checks</em> and constraints</h3>
+                </section>
+                <section>
+                    <h3>Primary resources managed by schedulers:</h3>
+                    <ul>
+                        <li>Processes</li>
+                        <li>Docker containers</li>
+                        <li>Virtual Machines</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Secondary resources managed by schedulers:</h3>
+                    <ul>
+                        <li class="fragment">Secrets</li>
+                        <li class="fragment">Service Discovery</li>
+                        <li class="fragment">Storage</li>
+                        <li class="fragment">Networking</li>
+                        <li class="fragment">Logging</li>
+                        <li class="fragment">Access Control</li>
+                        <li class="fragment">Configuration</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>What makes Nomad unique?</h3>
+                    <ul>
+                        <li class="fragment">Unix philosophy</li>
+                        <li class="fragment">Cross-platform and not just docker</li>
+                        <li class="fragment">Operationally simple</li>
+                        <li class="fragment">Easy multi-datacenter</li>
+                        <li class="fragment">Gradual migration path</li>
+                        <li class="fragment">Bin packing</li>
+                        <li class="fragment">Plan</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Demo</h3>
+                    <a href="https://www.nomadproject.iO">https://www.nomadproject.io</a><br/>
+                    <a href="https://www.consul.iO">https://www.consul.io</a><br/>
+                </section>

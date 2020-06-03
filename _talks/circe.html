@@ -1,0 +1,195 @@
+---
+title: Circe
+date: 2017-11-29
+duration: 5
+---
+				<section>
+                    <h3>Circe: JSON in Scala without all the boilerplate</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                  <h3>The problem</h3>
+<pre><code data-trim data-noescape>// AAA ModelDefs.scala
+implicit val GroupFormat = lazyFormat(jsonFormat3(Group))
+implicit val AuthRequestFormat = lazyFormat(jsonFormat2(AuthRequest))
+implicit val TokenMapFormat = lazyFormat(jsonFormat2(TokenMap))
+implicit val TokenFormat = lazyFormat(jsonFormat1(Token))
+implicit val GroupsFormat = lazyFormat(jsonFormat1(Groups))
+implicit val UserPropsFormat = lazyFormat(jsonFormat9(UserProps))
+implicit val listGroupsFormatFormat = lazyFormat(listFormat[Groups])
+implicit val ModPermissionFormat = lazyFormat(jsonFormat2(ModPermission))
+implicit val listModPermission = lazyFormat(listFormat[ModPermission])
+implicit val ModuleFormat = lazyFormat(jsonFormat1(Module))
+implicit val ErrorFormat = lazyFormat(jsonFormat1(Error))
+implicit val TokenMsgFormat = lazyFormat(jsonFormat2(TokenMsg))
+implicit val ResetPasswordReqFormat = lazyFormat(jsonFormat3(ResetPasswordReq))
+implicit val PaswdExpiryFormat = lazyFormat(jsonFormat1(PaswdExpiry))
+implicit val PaswdNoticeFormat = lazyFormat(jsonFormat1(PaswdNotice))
+implicit val AaaConfigFormat = lazyFormat(jsonFormat2(AaaConfig))
+implicit val TimePeriodFormat = lazyFormat(jsonFormat2(TimePeriod))
+implicit val AccountingLogRequestFormat = lazyFormat(jsonFormat2(AccountingLogRequest))
+implicit val AccountingLogResultFormat = lazyFormat(jsonFormat7(AccountingLogResult))
+implicit val UserRequestFormat = lazyFormat(jsonFormat1(UserRequest))
+implicit val UserPermissionsFormat = lazyFormat(jsonFormat1(UserPermissions))
+implicit val AaaConfigRespFormat = lazyFormat(jsonFormat13(AaaConfigResp))</code></pre>
+                </section>
+                <section>
+                    <h3>Parsing</h3>
+<pre><code data-trim data-noescape>import io.circe._, io.circe.parser._
+
+val rawJson = """
+{
+  "name": "group name",
+  "permissions": ["readSomething","writeSomething"],
+  "domains": ["adtran"]
+}
+"""
+
+val parseResult = parse(rawJson)
+parseResult foreach println
+/*
+Right({
+  "name" : "group name",
+  "permissions" : [
+    "readSomething",
+    "writeSomething"
+  ],
+  "domains" : [
+    "adtran"
+  ]
+})
+*/</code></pre>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>/*
+{
+  "name": "group name",
+  "permissions": ["readSomething","writeSomething"],
+  "domains": ["adtran"]
+}
+*/
+
+json.hcursor.downField("permissions").downArray.as[String]
+// Right(readSomething)</code></pre>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>import io.circe.optics.JsonPath._
+
+val permissions = root.permissions.each.string
+val getFirstPermission = permissions.headOption _
+val getAllPermissions = permissions.getAll _
+
+getFirstPermission(json)
+// Some(readSomething)
+getAllPermissions(json)
+// List(readSomething, writeSomething)</code></pre>
+                </section>
+                <section>
+                  <h3>Case Classes</h3>
+<pre><code data-trim data-noescape>import io.circe.generic.auto._
+case class Group(
+  name: String,
+  permissions: List[String],
+  domains: List[String])
+
+val group = json.as[Group]
+// Right(Group(group name,List(readSomething, writeSomething),List(adtran)))
+
+group.right.get.asJson
+/*
+{
+  "name" : "group name",
+  "permissions" : [
+    "readSomething",
+    "writeSomething"
+  ],
+  "domains" : [
+    "adtran"
+  ]
+}
+*/</code></pre>
+                </section>
+                <section>
+                  <h3>Inheritance</h3>
+<pre><code data-trim data-noescape>import io.circe.generic.JsonCodec
+case class RadiusAuth(host: String, auth_port: Int,
+  accounting_port: Int, timeout: Int, shared_secret: String)
+
+case class TacacsPlusAuth(host: String, auth_port: Int,
+  timeout: Int, shared_secret: String,
+  single_connect: Boolean)
+
+@JsonCodec sealed trait AuthMethod
+
+case class TacacsplusAuthMethod(name: String, retry_times: Int,
+  tacacsplus: TacacsPlusAuth) extends AuthMethod
+
+case class RadiusAuthMethod(name: String, retry_times: Int,
+  radius: RadiusAuth) extends AuthMethod
+
+object AuthMethod</code></pre>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>val auth: AuthMethod = RadiusAuthMethod("name", 0,
+  RadiusAuth("host", 0, 0, 0, "secret"))
+
+val json = auth.asJson
+/*
+{
+  "RadiusAuthMethod" : {
+    "name" : "name",
+    "retry_times" : 0,
+    "radius" : {
+      "host" : "host",
+      "auth_port" : 0,
+      "accounting_port" : 0,
+      "timeout" : 0,
+      "shared_secret" : "secret"
+    }
+  }
+}
+*/
+
+json.as[AuthMethod]
+// Right(RadiusAuthMethod(name, 0, RadiusAuth(host,0,0,0,secret)))</code></pre>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>//spray-json
+implicit object AuthMethodFormats extends JsonFormat[AuthMethod] {
+  def write(obj: AuthMethod): JsValue = JsString(obj.toString())
+
+  def read(json: JsValue): AuthMethod = json match {
+    case obj: JsObject if obj.getFields("radius").nonEmpty =>
+      obj.convertTo[RadiusAuthMethod]
+
+    case obj: JsObject if obj.getFields("tacacsplus").nonEmpty =>
+      obj.convertTo[TacacsplusAuthMethod]
+
+    case _ => UnknownAuthMethod()
+  }
+}</code></pre>
+                </section>
+                <section>
+                  <h3>Custom Codecs</h3>
+<pre><code data-trim data-noescape>val df = DateFormat.getDateTimeInstance
+
+// spray-json
+implicit object DateStringFormat extends JsonFormat[Date] {
+  def write(obj: Date): JsValue = JsString(df format obj)
+
+  def read(json: JsValue): Date = json match {
+    case JsString(string) => Try(df.parse(string)) recover {
+        case e => deserializationError(e.getMessage)}
+    case _ => deserializationError("Expected DateTime as JsString")
+  }
+}
+
+// circe
+implicit val encodeDate = Encoder.encodeString.contramap[Date](df format _)
+
+implicit val decodeDate = Decoder.decodeString.emapTry[Date](string =>
+  Try(df.parse(string)))</code></pre>
+                </section>
+                <section>
+                  <h1>Thank you</h1>
+                </section>

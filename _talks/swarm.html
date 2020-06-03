@@ -1,0 +1,72 @@
+---
+title: Docker Swarm
+date: 2018-02-14
+duration: 15
+---
+				<section>
+                    <h3>Baby Steps: Docker Swarm</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                  <h3>What Swarm Buys Us</h3>
+                  <ul>
+                    <li class="fragment">Docker managed overlay</li>
+                    <li class="fragment">DNS</li>
+                    <li class="fragment">Services</li>
+                    <li class="fragment">Secrets</li>
+                    <li class="fragment">Similar interface to starting bare containers</li>
+                  </ul>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>elif self.client.api_version < u'1.25':
+    container = self.client.create_container(
+        hostname=hostname,
+        image=self.container,
+        detach=True,
+        stdin_open=True,
+        tty=True,
+        name=self.name,
+        environment=environment,
+        user=user_group,
+        host_config=docker.types.HostConfig(version=self.client.api_version,
+            binds=volumes,
+            links=links,
+            port_bindings=port_bindings,
+            dns=dns,
+            dns_search=dns_search,
+            group_add=groups,
+            cap_add=cap_add,
+            **resource_limits
+        )
+    )
+else:
+    dns_config = docker.types.DNSConfig(nameservers=dns, search=dns_search)
+    mapped_volumes = [docker.types.Mount(source=k, target=v.values()[0] if isinstance(v, dict) else v, type=v.keys()[0] if isinstance(v, dict) else "bind") for k, v in volumes.items()]
+    container_spec = docker.types.ContainerSpec(
+        image=self.container,
+        hostname=hostname,
+        user=user_group,
+        mounts=mapped_volumes,
+        groups=groups,
+        tty=True,
+        open_stdin=True,
+        dns_config=dns_config,
+        env=environment
+    )
+    task_template = docker.types.TaskTemplate(container_spec)
+    int_port_bindings = {int(k): int(v) for k, v in port_bindings.items()}
+    endpoint_spec = docker.types.EndpointSpec(ports=int_port_bindings)
+    service = self.client.create_service(task_template, name=self.name, endpoint_spec=endpoint_spec, networks=['mcp'])</code></pre>
+                </section>
+                <section>
+                  <h3>What I accomplished in a couple afternoons</h3>
+                  <ul>
+                    <li class="fragment">Manually upgraded docker to version 18.02.0-ce in an MCP VM</li>
+                    <li class="fragment">Learned sshfs to speed up node admin and dockhand hacking on remote systems</li>
+                    <li class="fragment">Modified dockhand to start services instead of bare containers</li>
+                    <li class="fragment">Manually got a service working with docker's overlay network</li>
+                  </ul>
+                </section>
+                <section>
+                  <h1>Questions?</h1>
+                </section>

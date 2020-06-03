@@ -1,0 +1,94 @@
+---
+title: What's New With Scala?
+date: 2018-07-05
+duration: 15
+---
+				<section>
+                    <h3>What's New with Scala?</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                  <h3>2.13 Collections</h3>
+                  <ul>
+                    <li class="fragment">More consistency between lazy and strict collections.</li>
+                    <li class="fragment">Simpler object hierarchy.</li>
+                    <li class="fragment">No more signatures like <code>map[B, That](f: Int => B)(implicit bf: CanBuildFrom[List[Int], B, That])</code></li>
+                    <li class="fragment">New more efficient <code>groupMap</code> that combines <code>groupBy</code> followed by <code>mapValues</code></li>
+                    <li class="fragment">New <code>LazyList</code> instead of <code>Stream</code>, both head and tail are lazy.</li>
+                  </ul>
+                </section>
+                <section>
+                  <ul>
+                    <li>2.13.0-M4 was released the middle of May</li>
+                    <li class="fragment">2.13.0-M5 is planned for August 10th</li>
+                    <li class="fragment">What's taking so long?</li>
+                    <li class="fragment">What can I do to help?</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>Tooling Improvements</h3>
+                  <ul>
+                    <li class="fragment">Language Server Protocol</li>
+                    <li class="fragment">Build Server Protocol/Bloop</li>
+                    <li class="fragment">Triplequote Hydra parallel compiler</li>
+                    <li class="fragment">Scala Native</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>GraalVM</h3>
+                  <ul>
+                    <li class="fragment">Multi-language</li>
+                    <li class="fragment">Native images</li>
+                    <li class="fragment">NBI is 22M <em>including</em> runtime.</li>
+                    <li class="fragment">Compare to 55M for jars and ~200M for the jre, + OS for docker container.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>Scala 3</h3>
+                  <ul>
+                    <li class="fragment">Due in 2020.</li>
+                    <li class="fragment">Scala 2.14 will be focused on migration.</li>
+                    <li class="fragment">More info at <a href="http://dotty.epfl.ch/docs/reference/overview.html">http://dotty.epfl.ch/docs/reference/overview.html</a></li>
+                    <li class="fragment">Dropped a lot of rarely-used or problematic features.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Consistency</h4>
+                  <ul>
+                    <li class="fragment">Intersection types <code>A & B</code> replacing <code>A with B</code>. <b>Commutative!</b></li>
+                    <li class="fragment">Implicit function types <code>implicit A => B</code></li>
+                    <li class="fragment">Dependent function types <code>(x: T) => x.S</code></li>
+                    <li class="fragment">Traits can have parameters <code>trait T(x: S)</code></li>
+                    <li class="fragment">Can have tuples longer than 22.</li>
+                    <li class="fragment">Macros based on TASTY, a more consistent interface not tied directly to compiler internals.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Safety</h4>
+                  <ul>
+                    <li class="fragment">Union Types <code>A | B</code></li>
+                    <li class="fragment">Mutiversal equality. Equality checks only make sense for compatible types.</li>
+                    <li class="fragment">Restricted implicit conversions, with simpler syntax.</li>
+                    <li class="fragment">Null safety. Must explicitly declare a sum type: <code>String | Null</code>.</li>
+                    <li class="fragment">Effect Capabilities. Must declare effects such as null pointer exception being throwable.</li>
+                    <li class="fragment">Multiple levels of macros, not everything is super-powerful whitebox.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Ergonomics</h4>
+                  <ul>
+                    <li class="fragment">Enums <code>enum Color {case Red, Green, Blue}</code></li>
+                    <li class="fragment">Type lambdas <code>[X] => C[X]</code>.</li>
+                    <li class="fragment">Extension clauses: <code>extension StringOps for String { ... }</code></li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Performance</h4>
+                  <ul>
+                    <li class="fragment">Opaque types: <code>opaque type Id = String</code></li>
+                    <li class="fragment">Can declare parameters as <em>erased</em>, i.e. only used during type checking.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h2>Questions?</h2>
+                </section>
