@@ -27,6 +27,11 @@ plugins:
 
 exclude:
   - README.md
+  - Gemfile
+  - Gemfile.lock
+  - package.json
+  - package-lock.json
 
 include:
   - node_modules
+  - .nojekyll
