@@ -1,58 +1,58 @@
 ---
 title: Principles of Clean Functional Programming
 date: 2017-03-21
-duration: 60
+duration: 45
 ---
-<section>
-            <p>Principles of Clean Functional Programming</p>
-            <p>Karl Bielefeldt</p>
-            <p><small><a href="https://youtu.be/AgntY6UlIPQ">LambdaConf 2017 video</a></small></p>
-            <p><small>@softwarewhys</small></p>
-        </section>
-        <section>
-            <h3>About me:</h3>
-            <ul>
-                <li class="fragment">Embedded progammer roots</li>
-                <li class="fragment">Microservices platform future</li>
-            </ul>
-        </section>
-        <section>
-            <h3>Agenda</h3>
-            <ul>
-                <li class="fragment">General Tips</li>
-                <li class="fragment">Principles you already know from imperative programming</li>
-                <li class="fragment">Principles specific to functional programming</li>
+				<section>
+                    <p>Principles of Clean Functional Programming</p>
+                    <p>Karl Bielefeldt</p>
+                    <p><small><a href="https://youtu.be/AgntY6UlIPQ">LambdaConf 2017 video</a></small></p>
+                    <p><small>@softwarewhys</small></p>
+                </section>
+                <section>
+                    <h3>About me:</h3>
                     <ul>
-                        <li class="fragment">General</li>
-                        <li class="fragment">Iteration</li>
-                        <li class="fragment">Opportunities from immutability</li>
+                        <li class="fragment">Embedded progammer roots</li>
+                        <li class="fragment">Microservices platform future</li>
                     </ul>
-            </ul>
-        </section>
-        <section>
-            <h3>Notes:</h3>
-            <ul>
-                <li class="fragment">Not hard and fast rules</li>
-                <li class="fragment">Examples are for readability</li>
-                <li class="fragment">This talk only shows <i>what</i> to do, not <i>how</i></li>
-            </ul>
-        </section>
-        <section>
-            <h3>General Tips</h3>
-            <ul>
-                <li class="fragment">Don't stick with your first draft.</li>
-                <li class="fragment">Build your repetoire of functions.</li>
-                <li class="fragment">Don't forget to practice the "easy" parts.</li>
-            </ul>
-        </section>
-        <section>
-            <h1>Principles from imperative programming</h1>
-        </section>
-        <section>
-        <section>
-                <h3>Don't repeat yourself</h3>
-        </section>
-        <section>
+                </section>
+                <section>
+                    <h3>Agenda</h3>
+                    <ul>
+                        <li class="fragment">General Tips</li>
+                        <li class="fragment">Principles you already know from imperative programming</li>
+                        <li class="fragment">Principles specific to functional programming</li>
+                            <ul>
+                                <li class="fragment">General</li>
+                                <li class="fragment">Iteration</li>
+                                <li class="fragment">Opportunities from immutability</li>
+                            </ul>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Notes:</h3>
+                    <ul>
+                        <li class="fragment">Not hard and fast rules</li>
+                        <li class="fragment">Examples are for readability</li>
+                        <li class="fragment">This talk only shows <i>what</i> to do, not <i>how</i></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>General Tips</h3>
+                    <ul>
+                        <li class="fragment">Don't stick with your first draft.</li>
+                        <li class="fragment">Build your repetoire of functions.</li>
+                        <li class="fragment">Don't forget to practice the "easy" parts.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h1>Principles from imperative programming</h1>
+                </section>
+                <section>
+                <section>
+                        <h3>Don't repeat yourself</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>// http://stackoverflow.com/q/36413148/389146
 var typeName: String = ""
 if (stringTypes.contains(label)) {
@@ -66,522 +66,522 @@ if (stringTypes.contains(label)) {
 }</code></pre>
         </section>
         <section>
-<pre><code data-trim data-noescape>val types = Map(stringTypes   -> "string",
+<pre><code data-trim data-noescape>val types = Map(stringTypes -> "string",
         floatingTypes -> "float",
         encodingTypes -> "encoding",
         rangeTypes    -> "range")
 
 types find (_._1 contains label) map (_._2)
-getOrElse "label not found"</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>More principles from imperative programming</h3>
-            <ul>
-                <li class="fragment">Don't nest excessively.</li>
-                <li class="fragment">Use small functions.</li>
-            </ul>
-        </section>
-        <section>
+    getOrElse "label not found"</code></pre>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>More principles from imperative programming</h3>
+                    <ul>
+                        <li class="fragment">Don't nest excessively.</li>
+                        <li class="fragment">Use small functions.</li>
+                    </ul>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>// http://softwareengineering.stackexchange.com/a/342038/3965
 const obj1 = { a:1, b:2, c:3, d:3 };
 const obj2 = { a:1, b:1, e:2, f:2, g:3, h:5 };
 
 const getXs = (obj, getX) =>
-Object.keys(obj).map(key => getX(obj)(key));
+  Object.keys(obj).map(key => getX(obj)(key));
 
 const getPctSameXs = (getX, filter = vals => vals) =>
-(objA, objB) =>
-filter(getXs(objB, getX))
-.reduce(
-(numSame, x) =>
-  getXs(objA, getX).indexOf(x) > -1 ? numSame + 1 :
-    numSame, 0
-) / Object.keys(objA).length * 100;
+  (objA, objB) =>
+    filter(getXs(objB, getX))
+      .reduce(
+        (numSame, x) =>
+          getXs(objA, getX).indexOf(x) > -1 ? numSame + 1 :
+            numSame, 0
+      ) / Object.keys(objA).length * 100;
 
 const pctSameKeys =
-getPctSameXs(obj => key => key);
+    getPctSameXs(obj => key => key);
 const pctSameValsDups =
-getPctSameXs(obj => key => obj[key]);
+    getPctSameXs(obj => key => obj[key]);
 const pctSameValsNoDups =
-getPctSameXs(obj => key => obj[key],
-vals => [...new Set(vals)]);
+    getPctSameXs(obj => key => obj[key],
+        vals => [...new Set(vals)]);
 const pctSameProps = getPctSameXs(obj => key =>
-JSON.stringify( {[key]: obj[key]} ));</code></pre>
-        </section>
-        <section>
+    JSON.stringify( {[key]: obj[key]} ));</code></pre>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>function mapObject(obj, f) {
-return Object.keys(obj).map(key => f(obj, key));
+  return Object.keys(obj).map(key => f(obj, key));
 }
 
 function getPercentSame(obj1, obj2, f) {
-const mapped1 = mapObject(obj1, f);
-const mapped2 = mapObject(obj2, f);
-const same = mapped1.filter(x => mapped2.indexOf(x) != -1);
-const percent = same.length / mapped1.length * 100;
-return percent;
+  const mapped1 = mapObject(obj1, f);
+  const mapped2 = mapObject(obj2, f);
+  const same = mapped1.filter(x => mapped2.indexOf(x) != -1);
+  const percent = same.length / mapped1.length * 100;
+  return percent;
 }
 
 const getValues = (obj, key) => obj[key];
 const valuesWithDupsPercent =
-getPercentSame(obj1, obj2, getValues);</code></pre>
-        </section>
-        </section>
-        <section>
-            <h3>Principles specific to functional programming</h3>
-            <ul>
-                <li class="fragment">General</li>
-                <li class="fragment">Iteration</li>
-                <li class="fragment">Opportunities from immutability</li>
-            </ul>
-        </section>
-        <section>
-            <h1>General</h1>
-        </section>
-        <section>
-        <section>
-            <h3>Isolate I/O</h3>
-            <p class="fragment">Pure functions are easier to:</p>
-            <p class="fragment">Reorder</p>
-            <p class="fragment">Refactor</p>
-            <p class="fragment">Parallelize</p>
-            <p class="fragment">Typecheck</p>
-            <p class="fragment">Share data between</p>
-            <p class="fragment">Test</p>
-            <p class="fragment">Compose</p>
-        </section>
-        <section>
+    getPercentSame(obj1, obj2, getValues);</code></pre>
+                </section>
+                </section>
+                <section>
+                    <h3>Principles specific to functional programming</h3>
+                    <ul>
+                        <li class="fragment">General</li>
+                        <li class="fragment">Iteration</li>
+                        <li class="fragment">Opportunities from immutability</li>
+                    </ul>
+                </section>
+                <section>
+                    <h1>General</h1>
+                </section>
+                <section>
+                <section>
+                    <h3>Isolate I/O</h3>
+                    <p class="fragment">Pure functions are easier to:</p>
+                    <p class="fragment">Reorder</p>
+                    <p class="fragment">Refactor</p>
+                    <p class="fragment">Parallelize</p>
+                    <p class="fragment">Typecheck</p>
+                    <p class="fragment">Share data between</p>
+                    <p class="fragment">Test</p>
+                    <p class="fragment">Compose</p>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>val conversions = List(
-(1000, "M"),
-(900,  "CM"),
-(500,  "D"),
-(400,  "CD"),
-(100,  "C"),
-(90,   "XC"),
-(50,   "L"),
-(40,   "XL"),
-(10,   "X"),
-(9,    "IX"),
-(5,    "V"),
-(4,    "IV"),
-(1,    "I"))
+  (1000, "M"),
+  (900,  "CM"),
+  (500,  "D"),
+  (400,  "CD"),
+  (100,  "C"),
+  (90,   "XC"),
+  (50,   "L"),
+  (40,   "XL"),
+  (10,   "X"),
+  (9,    "IX"),
+  (5,    "V"),
+  (4,    "IV"),
+  (1,    "I"))
 
 def intToRoman(number: Int): Unit = {
-if (number == 0) {
-println()
-} else {
-val (decimal, roman) =
-(conversions dropWhile (_._1 > number)).head
+  if (number == 0) {
+    println()
+  } else {
+    val (decimal, roman) =
+      (conversions dropWhile (_._1 > number)).head
 
-print(roman)
-intToRoman(number - decimal)
-}
+    print(roman)
+    intToRoman(number - decimal)
+  }
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def intToRoman(number: Int): String = {
-if (number == 0) {
-""
-} else {
-val (decimal, roman) =
-(conversions dropWhile (_._1 > number)).head
+  if (number == 0) {
+    ""
+  } else {
+    val (decimal, roman) =
+      (conversions dropWhile (_._1 > number)).head
 
-roman + intToRoman(number - decimal)
-}
+    roman + intToRoman(number - decimal)
+  }
 }
 
 def printRoman = intToRoman _ andThen println
 </code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Don't try to eliminate all intermediate variables</h3>
-        </section>
-        <section>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Don't try to eliminate all intermediate variables</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>// http://stackoverflow.com/a/15195230/389146
 def foo(arguments: Seq[(String, String)],
-merges: Seq[(String, String)]) =
+        merges: Seq[(String, String)]) =
 {
-val metadata: Seq[Attribute] = (arguments ++ merges)
-.groupBy(_._1)
-.map {
-case (key, value) =>
-    Attribute(None, key,
-        Text(value.map(_._2).mkString(" ") ), Null)
-}
+    val metadata: Seq[Attribute] = (arguments ++ merges)
+    .groupBy(_._1)
+    .map {
+        case (key, value) =>
+            Attribute(None, key,
+                Text(value.map(_._2).mkString(" ") ), Null)
+    }
 
-var result: MetaData = Null
-for(m <- metadata) result = result.append( m )
-result
+    var result: MetaData = Null
+    for(m <- metadata) result = result.append( m )
+    result
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def foo(arguments: Seq[(String, String)],
-merges: Seq[(String, String)]) =
-(arguments ++ merges).groupBy(_._1).map {
-case (key, value) => Attribute(None, key,
-Text(value.map(_._2).mkString(" ")), Null)
-}.fold(Null)((soFar, attr) => soFar append attr)
+        merges: Seq[(String, String)]) =
+  (arguments ++ merges).groupBy(_._1).map {
+    case (key, value) => Attribute(None, key,
+        Text(value.map(_._2).mkString(" ")), Null)
+  }.fold(Null)((soFar, attr) => soFar append attr)
 
 def foo(arguments: Seq[(String, String)], merges: Seq[(String, String)]) =
-(arguments ++ merges).groupBy(_._1).map {
-case (key, value) => Attribute(None, key, Text(value.map(_._2).mkString(" ")), Null)
-}.fold(Null)((soFar, attr) => soFar append attr)</code></pre>
-        </section>
-        <section>
+  (arguments ++ merges).groupBy(_._1).map {
+    case (key, value) => Attribute(None, key, Text(value.map(_._2).mkString(" ")), Null)
+  }.fold(Null)((soFar, attr) => soFar append attr)</code></pre>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>type PairSeq = Seq[(String, String)]
 
 def combineText(text: PairSeq): Text =
-Text(text.map(_._2).mkString(" "))
+  Text(text.map(_._2).mkString(" "))
 
 def foo(arguments: PairSeq, merges: PairSeq) = {
-val metadata = (arguments ++ merges)
-.groupBy(_._1)
-.map{case (key, value) =>
-Attribute(None, key, combineText(value), Null)
-}
+  val metadata = (arguments ++ merges)
+    .groupBy(_._1)
+    .map{case (key, value) =>
+        Attribute(None, key, combineText(value), Null)
+    }
 
-metadata.fold(Null)((xs, attr) => xs append attr)
+  metadata.fold(Null)((xs, attr) => xs append attr)
 }</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Minimize pattern matching for standard library types</h3>
-            <ul>
-                <li class="fragment">Overly general tool</li>
-                <li class="fragment">Verbose and repetitive syntax</li>
-                <li class="fragment">Easier to make error that typechecker can't catch</li>
-                <li class="fragment">Often reinventing the wheel</li>
-            </ul>
-        </section>
-        <section>
-            When to use pattern matching?
-            <ul>
-                <li class="fragment">When you need exhaustive matching on a sum type.</li>
-                <li class="fragment">When you are extracting values on the left that are used on the right, especially complex nested extractions.</li>
-                <li class="fragment">When there aren't existing more tailored functions that fit better.</li>
-                <li class="fragment">When you've written it both ways and found it significantly cleaner.</li>
-            </ul>
-        </section>
-        <section>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Minimize pattern matching for standard library types</h3>
+                    <ul>
+                        <li class="fragment">Overly general tool</li>
+                        <li class="fragment">Verbose and repetitive syntax</li>
+                        <li class="fragment">Easier to make error that typechecker can't catch</li>
+                        <li class="fragment">Often reinventing the wheel</li>
+                    </ul>
+                </section>
+                <section>
+                    When to use pattern matching?
+                    <ul>
+                        <li class="fragment">When you need exhaustive matching on a sum type.</li>
+                        <li class="fragment">When you are extracting values on the left that are used on the right, especially complex nested extractions.</li>
+                        <li class="fragment">When there aren't existing more tailored functions that fit better.</li>
+                        <li class="fragment">When you've written it both ways and found it significantly cleaner.</li>
+                    </ul>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def intToRoman(number: Int): String = {
-if (number == 0) {
-""
-} else {
-val (decimal, roman) = number match {
-case x if x > 1000 => (1000, "M")
-case x if x > 900  => (900,  "CM")
-case x if x > 500  => (500,  "D")
-case x if x > 400  => (400,  "CD")
-case x if x > 100  => (100,  "C")
-case x if x > 90   => (90,   "XC")
-case x if x > 50   => (50,   "L")
-case x if x > 40   => (40,   "XL")
-case x if x > 10   => (10,   "X")
-case x if x > 9    => (9,    "IX")
-case x if x > 5    => (5,    "V")
-case x if x > 4    => (4,    "IV")
-case _             => (1,    "I")
-}
+  if (number == 0) {
+    ""
+  } else {
+    val (decimal, roman) = number match {
+      case x if x > 1000 => (1000, "M")
+      case x if x > 900  => (900,  "CM")
+      case x if x > 500  => (500,  "D")
+      case x if x > 400  => (400,  "CD")
+      case x if x > 100  => (100,  "C")
+      case x if x > 90   => (90,   "XC")
+      case x if x > 50   => (50,   "L")
+      case x if x > 40   => (40,   "XL")
+      case x if x > 10   => (10,   "X")
+      case x if x > 9    => (9,    "IX")
+      case x if x > 5    => (5,    "V")
+      case x if x > 4    => (4,    "IV")
+      case _             => (1,    "I")
+    }
 
-roman + intToRoman(number - decimal)
-}
+    roman + intToRoman(number - decimal)
+  }
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>val conversions = List(
-(1000, "M"),
-(900,  "CM"),
-(500,  "D"),
-(400,  "CD"),
-(100,  "C"),
-(90,   "XC"),
-(50,   "L"),
-(40,   "XL"),
-(10,   "X"),
-(9,    "IX"),
-(5,    "V"),
-(4,    "IV"),
-(1,    "I"))
+      (1000, "M"),
+      (900,  "CM"),
+      (500,  "D"),
+      (400,  "CD"),
+      (100,  "C"),
+      (90,   "XC"),
+      (50,   "L"),
+      (40,   "XL"),
+      (10,   "X"),
+      (9,    "IX"),
+      (5,    "V"),
+      (4,    "IV"),
+      (1,    "I"))
 
 def intToRoman(number: Int): String = {
-if (number == 0) {
-""
-} else {
-val (decimal, roman) =
-(conversions dropWhile (_._1 > number)).head
+  if (number == 0) {
+    ""
+  } else {
+    val (decimal, roman) =
+    (conversions dropWhile (_._1 > number)).head
 
-roman + intToRoman(number - decimal)
-}
+    roman + intToRoman(number - decimal)
+  }
 }</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Don’t overuse lambdas</h3>
-        </section>
-        <section>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Don’t overuse lambdas</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>const obj1 = { a:1, b:2, c:3, d:3 };
 const obj2 = { a:1, b:1, e:2, f:2, g:3, h:5 };
 
 const getXs = (obj, getX) =>
-Object.keys(obj).map(key => getX(obj)(key));
+  Object.keys(obj).map(key => getX(obj)(key));
 
 const getPctSameXs = (getX, filter = vals => vals) =>
-(objA, objB) =>
-filter(getXs(objB, getX))
-.reduce(
-(numSame, x) =>
-  getXs(objA, getX).indexOf(x) > -1 ? numSame + 1 :
-    numSame, 0
-) / Object.keys(objA).length * 100;
+  (objA, objB) =>
+    filter(getXs(objB, getX))
+      .reduce(
+        (numSame, x) =>
+          getXs(objA, getX).indexOf(x) > -1 ? numSame + 1 :
+            numSame, 0
+      ) / Object.keys(objA).length * 100;
 
 const pctSameKeys =
-getPctSameXs(obj => key => key);
+    getPctSameXs(obj => key => key);
 const pctSameValsDups =
-getPctSameXs(obj => key => obj[key]);
+    getPctSameXs(obj => key => obj[key]);
 const pctSameValsNoDups =
-getPctSameXs(obj => key => obj[key],
-vals => [...new Set(vals)]);
+    getPctSameXs(obj => key => obj[key],
+        vals => [...new Set(vals)]);
 const pctSameProps = getPctSameXs(obj => key =>
-JSON.stringify( {[key]: obj[key]} ));</code></pre>
-        </section>
-        <section>
+    JSON.stringify( {[key]: obj[key]} ));</code></pre>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>function mapObject(obj, f) {
-return Object.keys(obj).map(key => f(obj, key));
+  return Object.keys(obj).map(key => f(obj, key));
 }
 
 function getPercentSame(obj1, obj2, f) {
-const mapped1 = mapObject(obj1, f);
-const mapped2 = mapObject(obj2, f);
-const same = mapped1.filter(x => mapped2.indexOf(x) != -1);
-const percent = same.length / mapped1.length * 100;
-return percent;
+  const mapped1 = mapObject(obj1, f);
+  const mapped2 = mapObject(obj2, f);
+  const same = mapped1.filter(x => mapped2.indexOf(x) != -1);
+  const percent = same.length / mapped1.length * 100;
+  return percent;
 }
 
 const getValues = (obj, key) => obj[key];
 const valuesWithDupsPercent =
-getPercentSame(obj1, obj2, getValues);</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Don't jump out and back into monads</h3>
-        </section>
-        <section>
+    getPercentSame(obj1, obj2, getValues);</code></pre>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Don't jump out and back into monads</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>val in: Option[String] = ???
 val out: Option[Int] = in match {
-case Some(x) => Try(x.toInt).toOption
-case None    => None
+  case Some(x) => Try(x.toInt).toOption
+  case None    => None
 }</code></pre>
-        </section>
-        <section>
-<pre><code data-trim data-noescape>val out: Option[Int] = in flatMap {x => Try(x.toInt).toOption}</code></pre>
-        </section>
-        </section>
-        <section>
-            <h1>Iteration</h1>
-        </section>
-        <section>
-        <section>
-            Functional programming doesn't have imperative loops like
-            while and for loops, so instead we usually use
-            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>.
-        </section>
-        <section>
-            Functional programming doesn't have imperative loops like
-            while and for loops, so instead we usually use
-            <strike>recursion</strike>
-            <u>higher-order functions</u>.
-        </section>
-        <section>
-            <h3>Try to use higher-order functions instead of recursion</h3>
-            <ul>
-                <li class="fragment">Harder to reason about</li>
-                <li class="fragment">Overly general</li>
-                <li class="fragment">Easy to accidentally overflow the stack</li>
-                <li class="fragment">Easy to make too large</li>
-                <li class="fragment">Easier to make mistakes the type checker can't catch</li>
-                <li class="fragment">Often reinventing the wheel</li>
-            </ul>
-        </section>
-        <section>
-            When to use recursion?
-            <ul>
-                <li class="fragment">When you've tried it both ways and found it cleaner</li>
-                <li class="fragment">When the stop condition is complex</li>
-                <li class="fragment">When you would typically use it in imperative programming</li>
-                <li class="fragment">When the call stack manages data that you would otherwise have to manage manually</li>
-                <li class="fragment">Often beneficial to use recursion to create a new higher-order function</li>
-            </ul>
-        </section>
-        <section>
+                </section>
+                <section>
+<pre><code data-trim data-noescape> Try(x.toInt).toOption}</code></pre>
+                </section>
+                </section>
+                <section>
+                    <h1>Iteration</h1>
+                </section>
+                <section>
+                <section>
+                    Functional programming doesn't have imperative loops like
+                    while and for loops, so instead we usually use
+                    <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>.
+                </section>
+                <section>
+                    Functional programming doesn't have imperative loops like
+                    while and for loops, so instead we usually use
+                    <strike>recursion</strike>
+                    <u>higher-order functions</u>.
+                </section>
+                <section>
+                    <h3>Try to use higher-order functions instead of recursion</h3>
+                    <ul>
+                        <li class="fragment">Harder to reason about</li>
+                        <li class="fragment">Overly general</li>
+                        <li class="fragment">Easy to accidentally overflow the stack</li>
+                        <li class="fragment">Easy to make too large</li>
+                        <li class="fragment">Easier to make mistakes the type checker can't catch</li>
+                        <li class="fragment">Often reinventing the wheel</li>
+                    </ul>
+                </section>
+                <section>
+                    When to use recursion?
+                    <ul>
+                        <li class="fragment">When you've tried it both ways and found it cleaner</li>
+                        <li class="fragment">When the stop condition is complex</li>
+                        <li class="fragment">When you would typically use it in imperative programming</li>
+                        <li class="fragment">When the call stack manages data that you would otherwise have to manage manually</li>
+                        <li class="fragment">Often beneficial to use recursion to create a new higher-order function</li>
+                    </ul>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def intToRoman(number: Int): String = {
-def stream = Stream.iterate((number, "")){
-case (decimal, roman) => val (decDigit, romDigit) =
-(conversions dropWhile (_._1 > decimal)).head
-(decimal - decDigit, roman + romDigit)
-}
+  def stream = Stream.iterate((number, "")){
+    case (decimal, roman) => val (decDigit, romDigit) =
+        (conversions dropWhile (_._1 > decimal)).head
+    (decimal - decDigit, roman + romDigit)
+  }
 
-stream.dropWhile(_._1 > 0).map(_._2).head
+  stream.dropWhile(_._1 > 0).map(_._2).head
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def sumToN(n: Int): Int = {
-if (n == 0)
-0
-else
-n + sumToN(n-1)
+    if (n == 0)
+        0
+    else
+        n + sumToN(n-1)
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>@scala.annotation.tailrec
 def sumToN(n: Int, acc: Int = 0): Int = {
-if (n == 0)
-acc
-else
-sumToN(n-1, acc+n)
+    if (n == 0)
+        acc
+    else
+        sumToN(n-1, acc+n)
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def sumToN(n: Int): Int = (0 to n).sum
 
 def sumToN(n: Int): Int = 0 to n reduce (_ + _)</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Don’t use loop indices unless they are referenced directly by the problem statement</h3>
-        </section>
-        <section>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Don’t use loop indices unless they are referenced directly by the problem statement</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>// http://stackoverflow.com/q/42306911/389146
 def pair(a: Array[Int], target: Int): Option[(Int, Int)] = {
 
-var l = 0
-var r = a.length - 1
-var result: Option[(Int, Int)] = None
-while (l < r && result.isEmpty) {
-(a(l), a(r)) match {
-case (x, y) if x + y == target => result = Some(x, y)
-case (x, y) if x + y < target => l = l + 1
-case (x, y) if x + y > target => r = r - 1
-}
-}
-result
+  var l = 0
+  var r = a.length - 1
+  var result: Option[(Int, Int)] = None
+  while (l < r && result.isEmpty) {
+    (a(l), a(r)) match {
+      case (x, y) if x + y == target => result = Some(x, y)
+      case (x, y) if x + y < target => l = l + 1
+      case (x, y) if x + y > target => r = r - 1
+    }
+  }
+  result
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def findSum(a: Vector[Int],
-    target: Int): Option[(Int, Int)] = {
-def stream = Stream.iterate(a){xs =>
-if (xs.head + xs.last > target)
-xs.init
-else
-xs.tail
-}
+            target: Int): Option[(Int, Int)] = {
+  def stream = Stream.iterate(a){xs =>
+    if (xs.head + xs.last > target)
+        xs.init
+    else
+        xs.tail
+  }
 
-stream.take (a.size - 1)
-.map {xs => (xs.head, xs.last)}
-.find {case (x,y) => x + y == target}
+  stream.take (a.size - 1)
+        .map {xs => (xs.head, xs.last)}
+        .find {case (x,y) => x + y == target}
 }</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Look for opportunities to factor out loop structures</h3>
-        </section>
-        <section>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Look for opportunities to factor out loop structures</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>// http://stackoverflow.com/a/35051921/389146
 def getOpt(p: (Int) => Boolean): Option[Tree[Int]] = {
-def _getOpt(tree: Tree[Int],
-      p: (Int) => Boolean): Option[Tree[Int]] = {
-tree.children.map {t =>
-if(p(t.node))
-    Some(t)
-else
-    t.children.map(_getOpt(_, p))
-}
-}
+  def _getOpt(tree: Tree[Int],
+              p: (Int) => Boolean): Option[Tree[Int]] = {
+    tree.children.map {t =>
+        if(p(t.node))
+            Some(t)
+        else
+            t.children.map(_getOpt(_, p))
+    }
+  }
 }</code></pre>
-        </section>
-        <section>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>def depthFirstTraverse[A](tree: Tree[A]): Stream[Tree[A]] =
-tree #:: (tree.children map depthFirstTraverse)
-.fold(Stream.Empty)(_ ++ _)
+  tree #:: (tree.children map depthFirstTraverse)
+  .fold(Stream.Empty)(_ ++ _)
 
 def getOpt(p: (Int) => Boolean): Option[Tree[Int]] =
-depthFirstTraverse(tree) find {x => p(x.node)}</code></pre>
-        </section>
-        </section>
-        <section>
-            <h1>Opportunities from immutability</h1>
-        </section>
-        <section>
-        <section>
-            <h3>Keep relationships between objects outside of the objects themselves</h3>
-        </section>
-        <section>
+  depthFirstTraverse(tree) find {x => p(x.node)}</code></pre>
+                </section>
+                </section>
+                <section>
+                    <h1>Opportunities from immutability</h1>
+                </section>
+                <section>
+                <section>
+                    <h3>Keep relationships between objects outside of the objects themselves</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>case class Room(description: String,
-        monsters: List[Monster],
-        loot: List[Loot],
-        north: Option[Room],
-        south: Option[Room],
-        east:  Option[Room],
-        west:  Option[Room])</code></pre>
-        </section>
-        <section>
+                monsters: List[Monster],
+                loot: List[Loot],
+                north: Option[Room],
+                south: Option[Room],
+                east:  Option[Room],
+                west:  Option[Room])</code></pre>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>case class Room(description: String,
-        monsters: List[Monster],
-        loot: List[Loot],
-        doors: List[Direction])
+                monsters: List[Monster],
+                loot: List[Loot],
+                doors: List[Direction])
 
 val rooms = Map((0,0) -> Room("scary room",
-                      List(scaryMonster),
-                      List(coolLoot),
-                      List(North)),
-        (0,1) -> Room("fun room",
-                      List(clown),
-                      List(partyFavor),
-                      List(South,East)))</code></pre>
-        </section>
-        </section>
-        <section>
-        <section>
-            <h3>Use small, flexible data structures and transform on demand</h3>
-        </section>
-        <section>
+                              List(scaryMonster),
+                              List(coolLoot),
+                              List(North)),
+                (0,1) -> Room("fun room",
+                              List(clown),
+                              List(partyFavor),
+                              List(South,East)))</code></pre>
+                </section>
+                </section>
+                <section>
+                <section>
+                    <h3>Use small, flexible data structures and transform on demand</h3>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>case class Board(forward: Map[String, Node],
-         reverse: Map[Node, String],
-         occupiedSquares: List[String],
-         nodes: List[Node])</code></pre>
-        </section>
-        <section>
+                 reverse: Map[Node, String],
+                 occupiedSquares: List[String],
+                 nodes: List[Node])</code></pre>
+                </section>
+                <section>
 <pre><code data-trim data-noescape>val board: Map[String, Node] = ???
 val occupiedSquares = board.keySet
 ...
 val occupiedInRow =
-occupiedSquares filter {_ startsWith myRow}
+    occupiedSquares filter {_ startsWith myRow}
 val occupiedInCol =
-occupiedSquares filter {_ endsWith myCol}</code></pre>
-        </section>
-        </section>
-        <section>
-            <ul>
-                <li>General Tips</p>
-                <li class="fragment">Principles you already know from imperative programming</p>
-                <li class="fragment">Principles specific to functional programming</p>
+    occupiedSquares filter {_ endsWith myCol}</code></pre>
+                </section>
+                </section>
+                <section>
                     <ul>
-                        <li class="fragment">General</li>
-                        <li class="fragment">Iteration</li>
-                        <li class="fragment">Immutability</li>
+                        <li>General Tips</p>
+                        <li class="fragment">Principles you already know from imperative programming</p>
+                        <li class="fragment">Principles specific to functional programming</p>
+                            <ul>
+                                <li class="fragment">General</li>
+                                <li class="fragment">Iteration</li>
+                                <li class="fragment">Immutability</li>
+                            </ul>
                     </ul>
-            </ul>
-        </section>
-        <section>
-        </section>
-        <section>
-          <h1>Questions?</h1>
-        </section>
+                </section>
+                <section>
+                </section>
+                <section>
+                  <h1>Questions?</h1>
+                </section>
