@@ -1,0 +1,80 @@
+---
+title: Fun With Functors
+date: 2017-07-19
+duration: 5
+---
+				<section>
+                    <h3>Fun with Functors</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                    <h3>Lists</h3>
+                    <ul>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= List(1, 2, 3)</code></li>
+                        <li class="fragment"><code>val out = List("1", "2", "3")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Options</h3>
+                    <ul>
+                        <li class="fragment"><code>val in: Option[Int] = None</code></li>
+                        <li class="fragment"><code>val out = None</code></li>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= Some(1)</code></li>
+                        <li class="fragment"><code>val out = Some("1")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Eithers</h3>
+                    <ul>
+                        <li class="fragment"><code>val in: Either[Exception,Int] = Left(new Exception())</code></li>
+                        <li class="fragment"><code>val out = Left(new Exception())</code></li>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= Right(1)</code></li>
+                        <li class="fragment"><code>val out = Right("1")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Functions</h3>
+                    <ul>
+                        <li class="fragment"><code>val in = (x: Int) => x + 1</code></li>
+                        <li class="fragment"><code>val out =<br/>&nbsp;&nbsp;(x: Int) => (x + 1).toString</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Referring to them together?</h3>
+                    <h2 class="fragment">Mappable</h2>
+                </section>
+                <section data-transition="slide-in none-out">
+                    <h3 style="vertical-align: middle; text-decoration: line-through">Mappable</h3>
+                </section>
+                <section data-transition="none-in slide-out">
+                    <h3 style="vertical-align: middle">Functor</h3>
+                </section>
+                <section>
+                    <h3>Tree[A]</h3>
+                    <ul>
+                        <li class="fragment"><code>def map[B](f: (A) => B): Tree[B] = ???</code></li>
+                        <li class="fragment"><code>def map[B](f: (A) => B): Tree[B] = Tree.empty[B]</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Functor Laws</h3>
+                    <ul>
+                        <li class="fragment"><code>in map identity == in</code></li>
+                        <li class="fragment"><code>(f compose g).map ==<br/>f.map compose g.map</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>What are they good for?</h3>
+                    <ul>
+                        <li class="fragment"><code>val in = Future.successful(List(Some(1), None, Some(3)))</code></li>
+                        <li class="fragment"><code>val futListOpt = Functor[Future] compose Functor[List] compose Functor[Option]</code></li>
+                        <li class="fragment"><code>futListOpt.map(in)(_.toString)</code></li>
+                    </ul>
+                </section>
+                <section>
+                  <h1>Thank you</h1>
+                </section>
