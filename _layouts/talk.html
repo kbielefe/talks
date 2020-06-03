@@ -26,6 +26,7 @@
 		<script src="{{ site.baseurl }}/node_modules/reveal.js/plugin/highlight/highlight.js"></script>
     <script>
       Reveal.initialize({
+        totalTime: {{ page.duration }} * 60,
         plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
       });
     </script>
