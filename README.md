@@ -1,6 +1,6 @@
 # Talks
 
-This is the source code for https://kbielefe.github.io/tasks, a [Jekyll](https://jekyllrb.com) and [Reveal.js](https://revealjs.com) site to hold the
+This is the source code for https://kbielefe.github.io/talks, a [Jekyll](https://jekyllrb.com) and [Reveal.js](https://revealjs.com) site to hold the
 slides and other content for various talks I have given.
 
 ## To install or upgrade build dependencies:
