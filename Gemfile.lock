@@ -86,6 +86,11 @@ GEM
     http_parser.rb (0.6.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
+    jekflix (3.1.0)
+      jekyll (~> 3.8)
+      jekyll-paginate (= 1.1.0)
+      jekyll-paginate-content (= 1.1.0)
+      rouge (~> 3.3)
     jekyll (3.8.7)
       addressable (~> 2.4)
       colorator (~> 1.0)
@@ -126,6 +131,8 @@ GEM
     jekyll-optional-front-matter (0.3.2)
       jekyll (>= 3.0, < 5.0)
     jekyll-paginate (1.1.0)
+    jekyll-paginate-content (1.1.0)
+      jekyll (~> 3.0)
     jekyll-readme-index (0.3.0)
       jekyll (>= 3.0, < 5.0)
     jekyll-redirect-from (0.15.0)
@@ -243,8 +250,8 @@ PLATFORMS
 
 DEPENDENCIES
   github-pages
+  jekflix
   jekyll-feed (~> 0.12)
-  jekyll-theme-modernist
 
 BUNDLED WITH
    2.1.4
