@@ -16,6 +16,12 @@ npm install
 bundle exec jekyll serve
 ```
 
+## To build the site for publishing to GitHub pages or elsewhere:
+
+```
+bundle exec jekyll build
+```
+
 ## To create a new talk:
 
 Copy a file in the _talks directory.
