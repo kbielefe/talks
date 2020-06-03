@@ -1,0 +1,25 @@
+{
+  "name": "presentations",
+  "version": "1.0.0",
+  "description": "Slides and other content for talks Karl Bielefeldt has given.",
+  "main": "index.js",
+  "dependencies": {
+    "reveal.js": "^4.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kbielefe/presentations.git"
+  },
+  "keywords": [
+    "presentations",
+    "talks",
+    "slides"
+  ],
+  "author": "Karl Bielefeldt",
+  "bugs": {
+    "url": "https://github.com/kbielefe/presentations/issues"
+  },
+  "homepage": "https://kbielefe.github.io/presentations"
+}

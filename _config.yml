@@ -1,0 +1,32 @@
+title: Karl Bielefeldt's Talks
+email: karl.bielefeldt@gmail.com
+description: >-
+  The slides and other content for various talks Karl Bielefeldt has given.
+baseurl: "/talks"
+url: "http://kbielefe.github.io"
+twitter_username: softwarewhys
+github_username:  kbielefe
+
+theme: jekyll-theme-modernist
+
+collections:
+  talks:
+    output: true
+    permalink: /:name
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "talks"
+    values:
+      layout: "talk"
+
+plugins:
+  - jekyll-feed
+
+exclude:
+  - README.md
+
+include:
+  - node_modules
