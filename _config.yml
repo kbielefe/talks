@@ -1,4 +1,6 @@
+name: Karl's Talks
 title: Karl's Talks
+subtitle: Programming talks by Karl Bielefeldt
 email: karl.bielefeldt@gmail.com
 description: >-
   The slides and other content for various talks Karl Bielefeldt has given.
@@ -9,18 +11,14 @@ github_username:  kbielefe
 
 theme: jekflix
 
-collections:
-  talks:
-    output: true
-    permalink: /:name
-
 defaults:
   -
     scope:
       path: ""
-      type: "talks"
+      type: "posts"
     values:
       layout: "talk"
+      permalink: /:name
 
 plugins:
   - jekyll-feed
