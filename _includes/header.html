@@ -1,0 +1,13 @@
+<header class="bar-header">
+    <a id="search" class="dosearch" role="button">
+        <svg class="icon-search"><use xlink:href="#icon-search"></use></svg>
+    </a>
+    <h1 class="logo">
+      <a href="{{ site.baseurl }}/"> {{ site.name }} </a>
+    </h1>
+    <h3 class="subtitle">{{ site.subtitle }}</h3>
+</header>
+
+<div id="mask" class="overlay"></div>
+
+{% include search.html %}
