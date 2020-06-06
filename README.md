@@ -26,6 +26,6 @@ bundle exec jekyll build
 
 ## To create a new talk:
 
-Copy a file in the _posts directory. Create a 380x200 image with 5px inner
+Copy a file in the _posts directory. Create a 280x200 image with 5px inner
 boundaries in the assets/header-images directory and set the optimized_image
 front matter to its url. Use the 'slides' category for reveal.js slides.

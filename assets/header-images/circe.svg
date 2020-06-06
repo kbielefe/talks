@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="circe.svg"
+   id="svg76"
+   version="1.1"
+   viewBox="150 100 280.00001 200"
+   height="200"
+   width="280">
+  <metadata
+     id="metadata82">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>circe</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs80" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:current-layer="svg76"
+     inkscape:window-maximized="0"
+     inkscape:window-y="32"
+     inkscape:window-x="0"
+     inkscape:cy="212.1021"
+     inkscape:cx="169.30275"
+     inkscape:zoom="1.3015564"
+     inkscape:pagecheckerboard="false"
+     showgrid="false"
+     id="namedview78"
+     inkscape:window-height="866"
+     inkscape:window-width="1598"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#000000" />
+  <!-- Generator: Sketch 3.8.3 (29802) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title65">circe</title>
+  <desc
+     id="desc67">Created with Sketch.</desc>
+  <g
+     transform="matrix(1.1360556,0,0,1.1360556,-17.899282,-59.612075)"
+     fill-rule="evenodd"
+     fill="none"
+     stroke-width="1"
+     stroke="none"
+     id="Page-1">
+    <g
+       transform="translate(131,80)"
+       id="Circe">
+      <path
+         fill="#f2583a"
+         id="Path"
+         d="m 76.05,76.385721 h 60.6123 c 12.4641,0 22.84065,9.993268 22.8753,22.480683 0.0221,7.752956 -3.86415,14.595176 -9.7938,18.669126" />
+      <polyline
+         points="95.4 205.02183 135.5931 181.98569 135.5931 135.993661 95.4 112.997647"
+         fill="#b8b9bc"
+         id="polyline70" />
+      <path
+         fill="#ffffff"
+         id="path72"
+         d="m 171.45396,91.497625 c 4.5e-4,2.132108 -0.2538,4.2295 -0.74295,6.255656 l 10.70595,-6.255656 z M 99.16641,73.013348 156.52836,105.8543 c 4.3029,-3.50227 6.82695,-8.761977 6.8256,-14.356675 h -18.87435 v -8.115444 h 16.9578 c -3.06945,-6.133924 -9.50085,-10.368833 -16.90875,-10.368833 z m 9.62055,41.002832 v 78.03812 l 32.0931,-18.39366 v -41.28282 z m -8.1,118.12706 v -26.09702 l -23.89725,13.44008 -8.12385,-4.69343 32.0211,-18.09609 v -96.66081 l 48.2931,27.63084 v 50.70079 l -40.1931,23.03614 v 16.75524 l 54.9009,-31.43112 v -67.42807 l -95.022,-54.401887 h 75.8628 c 11.9691,0 22.1553,7.776399 25.641,18.484278 h 41.21415 l -46.57365,27.213339 6.9777,3.99505 v 76.8465 z" />
+    </g>
+  </g>
+</svg>
