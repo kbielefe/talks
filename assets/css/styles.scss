@@ -50,3 +50,14 @@ $texts: #333333;
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+.post-content .tags a {
+  color: #a9a9a9;
+  border: 1px solid #a9a9a9;
+}
+
+.post-content .tags a:hover {
+  color: #141414;
+  background: white;
+  border-color: white;
+}
