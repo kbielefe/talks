@@ -16,7 +16,7 @@ jobs:
       with:
         ruby-version: 2.6
     - name: Setup Node.js environment
-      uses: actions/setup-node@v1.4.2
+      uses: actions/setup-node@v2.1.4
     - uses: actions/cache@v2
       with:
         path: vendor/bundle
