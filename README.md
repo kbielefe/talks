@@ -5,6 +5,8 @@ slides and other content for various talks I have given.
 
 ## To install or upgrade build dependencies:
 
+Set up rbenv using [these instructions](https://github.com/rbenv/rbenv#installation).
+
 ```
 bundle update
 npm install
