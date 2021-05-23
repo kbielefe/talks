@@ -34,7 +34,7 @@ jobs:
     - name: Install npm dependencies
       run: npm install
     - name: Build site
-      run: bundle exec jekyll build
+      run: bundle exec jekyll build --future
     - name: Publish to GitHub Pages
       uses: crazy-max/ghaction-github-pages@v2.0.1
       with:
