@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    <title>What's New With Scala? | Karl's Talks</title>
+    <meta name="description" content="An overview of what's coming in Scala 2.13 and 3.x. Given to fill in my colleagues after I attended Scala Days.">
+    
+        <meta name="keywords" content="Scala, Tech-Talk">
+    
+
+    <!-- Social: Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="What's New With Scala? | Karl's Talks">
+    <meta name="twitter:description" content="An overview of what's coming in Scala 2.13 and 3.x. Given to fill in my colleagues after I attended Scala Days.">
+    <meta property="twitter:image:src" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    
+        <meta name="twitter:site" content="@softwarewhys">
+    
+
+    <!-- Social: Facebook / Open Graph -->
+    <meta property="og:url" content="http://kbielefe.github.io/talks/2018-07-05-whats-new-with-scala">
+    <meta property="og:title" content="What's New With Scala? | Karl's Talks">
+    <meta property="og:image" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    <meta property="og:description" content="An overview of what's coming in Scala 2.13 and 3.x. Given to fill in my colleagues after I attended Scala Days.">
+    <meta property="og:site_name" content="Karl's Talks">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/talks/favicon.ico" type="image/x-icon" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/talks/assets/img/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icons/apple-touch-icon-152x152.png" />
+
+    <!-- Windows 8 Tile Icons -->
+    <meta name="application-name" content="Karl's Talks">
+    <meta name="msapplication-TileColor" content="#141414">
+    <meta name="msapplication-square70x70logo" content="smalltile.png" />
+    <meta name="msapplication-square150x150logo" content="mediumtile.png" />
+    <meta name="msapplication-wide310x150logo" content="widetile.png" />
+    <meta name="msapplication-square310x310logo" content="largetile.png" />
+    
+    <!-- Android Lolipop Theme Color -->
+    <meta name="theme-color" content="#141414">
+
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/theme/black.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        				<section>
+                    <h3>What's New with Scala?</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                  <h3>2.13 Collections</h3>
+                  <ul>
+                    <li class="fragment">More consistency between lazy and strict collections.</li>
+                    <li class="fragment">Simpler object hierarchy.</li>
+                    <li class="fragment">No more signatures like <code>map[B, That](f: Int => B)(implicit bf: CanBuildFrom[List[Int], B, That])</code></li>
+                    <li class="fragment">New more efficient <code>groupMap</code> that combines <code>groupBy</code> followed by <code>mapValues</code></li>
+                    <li class="fragment">New <code>LazyList</code> instead of <code>Stream</code>, both head and tail are lazy.</li>
+                  </ul>
+                </section>
+                <section>
+                  <ul>
+                    <li>2.13.0-M4 was released the middle of May</li>
+                    <li class="fragment">2.13.0-M5 is planned for August 10th</li>
+                    <li class="fragment">What's taking so long?</li>
+                    <li class="fragment">What can I do to help?</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>Tooling Improvements</h3>
+                  <ul>
+                    <li class="fragment">Language Server Protocol</li>
+                    <li class="fragment">Build Server Protocol/Bloop</li>
+                    <li class="fragment">Triplequote Hydra parallel compiler</li>
+                    <li class="fragment">Scala Native</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>GraalVM</h3>
+                  <ul>
+                    <li class="fragment">Multi-language</li>
+                    <li class="fragment">Native images</li>
+                    <li class="fragment">NBI is 22M <em>including</em> runtime.</li>
+                    <li class="fragment">Compare to 55M for jars and ~200M for the jre, + OS for docker container.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3>Scala 3</h3>
+                  <ul>
+                    <li class="fragment">Due in 2020.</li>
+                    <li class="fragment">Scala 2.14 will be focused on migration.</li>
+                    <li class="fragment">More info at <a href="http://dotty.epfl.ch/docs/reference/overview.html">http://dotty.epfl.ch/docs/reference/overview.html</a></li>
+                    <li class="fragment">Dropped a lot of rarely-used or problematic features.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Consistency</h4>
+                  <ul>
+                    <li class="fragment">Intersection types <code>A & B</code> replacing <code>A with B</code>. <b>Commutative!</b></li>
+                    <li class="fragment">Implicit function types <code>implicit A => B</code></li>
+                    <li class="fragment">Dependent function types <code>(x: T) => x.S</code></li>
+                    <li class="fragment">Traits can have parameters <code>trait T(x: S)</code></li>
+                    <li class="fragment">Can have tuples longer than 22.</li>
+                    <li class="fragment">Macros based on TASTY, a more consistent interface not tied directly to compiler internals.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Safety</h4>
+                  <ul>
+                    <li class="fragment">Union Types <code>A | B</code></li>
+                    <li class="fragment">Mutiversal equality. Equality checks only make sense for compatible types.</li>
+                    <li class="fragment">Restricted implicit conversions, with simpler syntax.</li>
+                    <li class="fragment">Null safety. Must explicitly declare a sum type: <code>String | Null</code>.</li>
+                    <li class="fragment">Effect Capabilities. Must declare effects such as null pointer exception being throwable.</li>
+                    <li class="fragment">Multiple levels of macros, not everything is super-powerful whitebox.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Ergonomics</h4>
+                  <ul>
+                    <li class="fragment">Enums <code>enum Color {case Red, Green, Blue}</code></li>
+                    <li class="fragment">Type lambdas <code>[X] => C[X]</code>.</li>
+                    <li class="fragment">Extension clauses: <code>extension StringOps for String { ... }</code></li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Performance</h4>
+                  <ul>
+                    <li class="fragment">Opaque types: <code>opaque type Id = String</code></li>
+                    <li class="fragment">Can declare parameters as <em>erased</em>, i.e. only used during type checking.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h2>Questions?</h2>
+                </section>
+
+      </div>
+    </div>
+    <script src="/talks/node_modules/reveal.js/dist/reveal.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/notes/notes.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        totalTime: 15 * 60,
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
+</html>

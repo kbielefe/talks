@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    <title>Intro to Scheduling with Nomad | Karl's Talks</title>
+    <meta name="description" content="A brief introduction to HashiCorp Nomad and comparison with other solutions.">
+    
+        <meta name="keywords" content="Orchestration, Nomad, Tech-Talk">
+    
+
+    <!-- Social: Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Intro to Scheduling with Nomad | Karl's Talks">
+    <meta name="twitter:description" content="A brief introduction to HashiCorp Nomad and comparison with other solutions.">
+    <meta property="twitter:image:src" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    
+        <meta name="twitter:site" content="@softwarewhys">
+    
+
+    <!-- Social: Facebook / Open Graph -->
+    <meta property="og:url" content="http://kbielefe.github.io/talks/2017-09-08-nomad">
+    <meta property="og:title" content="Intro to Scheduling with Nomad | Karl's Talks">
+    <meta property="og:image" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    <meta property="og:description" content="A brief introduction to HashiCorp Nomad and comparison with other solutions.">
+    <meta property="og:site_name" content="Karl's Talks">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/talks/favicon.ico" type="image/x-icon" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/talks/assets/img/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icons/apple-touch-icon-152x152.png" />
+
+    <!-- Windows 8 Tile Icons -->
+    <meta name="application-name" content="Karl's Talks">
+    <meta name="msapplication-TileColor" content="#141414">
+    <meta name="msapplication-square70x70logo" content="smalltile.png" />
+    <meta name="msapplication-square150x150logo" content="mediumtile.png" />
+    <meta name="msapplication-wide310x150logo" content="widetile.png" />
+    <meta name="msapplication-square310x310logo" content="largetile.png" />
+    
+    <!-- Android Lolipop Theme Color -->
+    <meta name="theme-color" content="#141414">
+
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/theme/black.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        				<section>
+                    <h3>Intro to Scheduling with Nomad</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                    <h3>Agenda</h3>
+                    <ul>
+                        <li class="fragment">What is a scheduler?</li>
+                        <li class="fragment">Nomad compared to other schedulers</li>
+                        <li class="fragment">Demo</li>
+                    </ul>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>[servers:children]
+DC1
+DC2
+
+[DC1]
+10.1.1.101 node_num=1 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+10.1.1.102 node_num=2 roles='["pmaa"]'
+10.1.1.103 node_num=3 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+
+[DC1:vars]
+node_availability=available
+
+[DC2]
+10.1.2.104 node_num=4 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+10.1.2.105 node_num=5 roles='["pmaa"]'
+10.1.2.106 node_num=6 roles='["osa-cp", "dnsmasq", "zookeeper", "cassandra", "kafka"]'
+
+[DC2:vars]
+node_availability=unavailable
+
+[admin]
+localhost ansible_connection=local</code></pre>
+                </section>
+                <section class="center">
+                    <h3><em>Schedulers</em> allocate <em>resources</em> to nodes based on <em>constraints</em></h3>
+                </section>
+                <section class="center">
+                    <h3>Schedulers <em>monitor and reallocate</em> resources to nodes based on <em>health checks</em> and constraints</h3>
+                </section>
+                <section>
+                    <h3>Primary resources managed by schedulers:</h3>
+                    <ul>
+                        <li>Processes</li>
+                        <li>Docker containers</li>
+                        <li>Virtual Machines</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Secondary resources managed by schedulers:</h3>
+                    <ul>
+                        <li class="fragment">Secrets</li>
+                        <li class="fragment">Service Discovery</li>
+                        <li class="fragment">Storage</li>
+                        <li class="fragment">Networking</li>
+                        <li class="fragment">Logging</li>
+                        <li class="fragment">Access Control</li>
+                        <li class="fragment">Configuration</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>What makes Nomad unique?</h3>
+                    <ul>
+                        <li class="fragment">Unix philosophy</li>
+                        <li class="fragment">Cross-platform and not just docker</li>
+                        <li class="fragment">Operationally simple</li>
+                        <li class="fragment">Easy multi-datacenter</li>
+                        <li class="fragment">Gradual migration path</li>
+                        <li class="fragment">Bin packing</li>
+                        <li class="fragment">Plan</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Demo</h3>
+                    <a href="https://www.nomadproject.iO">https://www.nomadproject.io</a><br/>
+                    <a href="https://www.consul.iO">https://www.consul.io</a><br/>
+                </section>
+
+      </div>
+    </div>
+    <script src="/talks/node_modules/reveal.js/dist/reveal.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/notes/notes.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        totalTime: 15 * 60,
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
+</html>

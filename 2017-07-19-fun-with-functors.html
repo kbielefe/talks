@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    <title>Fun With Functors | Karl's Talks</title>
+    <meta name="description" content="A lightning talk that attempted to introduce functors using concepts imperative programmers are already familiar with, but turned out to be too weighty a top...">
+    
+        <meta name="keywords" content="Functional-Programming, Functors, Tech-Talk">
+    
+
+    <!-- Social: Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fun With Functors | Karl's Talks">
+    <meta name="twitter:description" content="A lightning talk that attempted to introduce functors using concepts imperative programmers are already familiar with, but turned out to be too weighty a top...">
+    <meta property="twitter:image:src" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    
+        <meta name="twitter:site" content="@softwarewhys">
+    
+
+    <!-- Social: Facebook / Open Graph -->
+    <meta property="og:url" content="http://kbielefe.github.io/talks/2017-07-19-fun-with-functors">
+    <meta property="og:title" content="Fun With Functors | Karl's Talks">
+    <meta property="og:image" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    <meta property="og:description" content="A lightning talk that attempted to introduce functors using concepts imperative programmers are already familiar with, but turned out to be too weighty a top...">
+    <meta property="og:site_name" content="Karl's Talks">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/talks/favicon.ico" type="image/x-icon" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/talks/assets/img/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icons/apple-touch-icon-152x152.png" />
+
+    <!-- Windows 8 Tile Icons -->
+    <meta name="application-name" content="Karl's Talks">
+    <meta name="msapplication-TileColor" content="#141414">
+    <meta name="msapplication-square70x70logo" content="smalltile.png" />
+    <meta name="msapplication-square150x150logo" content="mediumtile.png" />
+    <meta name="msapplication-wide310x150logo" content="widetile.png" />
+    <meta name="msapplication-square310x310logo" content="largetile.png" />
+    
+    <!-- Android Lolipop Theme Color -->
+    <meta name="theme-color" content="#141414">
+
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/theme/black.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        				<section>
+                    <h3>Fun with Functors</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                    <h3>Lists</h3>
+                    <ul>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= List(1, 2, 3)</code></li>
+                        <li class="fragment"><code>val out = List("1", "2", "3")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Options</h3>
+                    <ul>
+                        <li class="fragment"><code>val in: Option[Int] = None</code></li>
+                        <li class="fragment"><code>val out = None</code></li>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= Some(1)</code></li>
+                        <li class="fragment"><code>val out = Some("1")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Eithers</h3>
+                    <ul>
+                        <li class="fragment"><code>val in: Either[Exception,Int] = Left(new Exception())</code></li>
+                        <li class="fragment"><code>val out = Left(new Exception())</code></li>
+                        <li class="fragment"><code>val in&nbsp;&nbsp;= Right(1)</code></li>
+                        <li class="fragment"><code>val out = Right("1")</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Functions</h3>
+                    <ul>
+                        <li class="fragment"><code>val in = (x: Int) => x + 1</code></li>
+                        <li class="fragment"><code>val out =<br/>&nbsp;&nbsp;(x: Int) => (x + 1).toString</code></li>
+                        <li class="fragment"><code>in map {_.toString}</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Referring to them together?</h3>
+                    <h2 class="fragment">Mappable</h2>
+                </section>
+                <section data-transition="slide-in none-out">
+                    <h3 style="vertical-align: middle; text-decoration: line-through">Mappable</h3>
+                </section>
+                <section data-transition="none-in slide-out">
+                    <h3 style="vertical-align: middle">Functor</h3>
+                </section>
+                <section>
+                    <h3>Tree[A]</h3>
+                    <ul>
+                        <li class="fragment"><code>def map[B](f: (A) => B): Tree[B] = ???</code></li>
+                        <li class="fragment"><code>def map[B](f: (A) => B): Tree[B] = Tree.empty[B]</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Functor Laws</h3>
+                    <ul>
+                        <li class="fragment"><code>in map identity == in</code></li>
+                        <li class="fragment"><code>(f compose g).map ==<br/>f.map compose g.map</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>What are they good for?</h3>
+                    <ul>
+                        <li class="fragment"><code>val in = Future.successful(List(Some(1), None, Some(3)))</code></li>
+                        <li class="fragment"><code>val futListOpt = Functor[Future] compose Functor[List] compose Functor[Option]</code></li>
+                        <li class="fragment"><code>futListOpt.map(in)(_.toString)</code></li>
+                    </ul>
+                </section>
+                <section>
+                  <h1>Thank you</h1>
+                </section>
+
+      </div>
+    </div>
+    <script src="/talks/node_modules/reveal.js/dist/reveal.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/notes/notes.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        totalTime: 5 * 60,
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
+</html>
