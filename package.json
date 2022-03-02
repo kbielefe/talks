@@ -4,7 +4,7 @@
   "description": "Slides and other content for talks Karl Bielefeldt has given.",
   "main": "index.js",
   "dependencies": {
-    "reveal.js": "^4.0.2"
+    "reveal.js": "^4.3.0"
   },
   "devDependencies": {},
   "scripts": {},
