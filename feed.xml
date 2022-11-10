@@ -1,0 +1,1672 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.2">Jekyll</generator><link href="http://kbielefe.github.io/talks/feed.xml" rel="self" type="application/atom+xml" /><link href="http://kbielefe.github.io/talks/" rel="alternate" type="text/html" /><updated>2022-11-10T04:13:27+00:00</updated><id>http://kbielefe.github.io/talks/feed.xml</id><title type="html">Karl’s Talks</title><subtitle>Slides for various programming talks by Karl Bielefeldt</subtitle><entry><title type="html">Intro to Functional IO</title><link href="http://kbielefe.github.io/talks/2022-11-10-intro-to-functional-io" rel="alternate" type="text/html" title="Intro to Functional IO" /><published>2022-11-10T00:00:00+00:00</published><updated>2022-11-10T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/intro-to-functional-io</id><content type="html" xml:base="http://kbielefe.github.io/talks/2022-11-10-intro-to-functional-io">&lt;section&gt;
+  &lt;h3&gt;Intro to Functional IO&lt;/h3&gt;
+  &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;section&gt;
+    &lt;h3&gt;Have you ever seen a comment like this?&lt;/h3&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    Real programs need side effects, so I prefer a language that handles them well.
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Language A&lt;/h4&gt;
+    &lt;ul&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Can run side effects immediately where they are declared.&lt;/li&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Can throw and catch exceptions.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Language B&lt;/h4&gt;
+    &lt;ul&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Can declare side effects separately from where they are run.&lt;/li&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Can easily run side effects lazily.&lt;/li&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Can store side effects in variables or collections.&lt;/li&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Many ways to compose side effects concurrently.&lt;/li&gt;
+      &lt;li class=&quot;fragment&quot;&gt;Many alternatives for error handling.&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;h4 class=&quot;fragment&quot;&gt;Which language better handles side effects?&lt;/h4&gt;
+  &lt;/section&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Hello world&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+import cats.effect.{IO, IOApp}
+import cats.implicits._
+
+object HelloWorld extends IOApp.Simple {
+  val run = IO.println(&quot;Hello, World!&quot;)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+import Data.Either
+import Control.Exception
+
+main :: IO ()
+main = putStrLn &quot;Hello, World!&quot;&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Get input&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+IO.readLine.map(&quot;Hello, &quot; + _) &gt;&gt;= IO.println&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+(&quot;Hello, &quot; ++) &lt;$&gt; getLine &gt;&gt;= putStrLn&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Another way to get input&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+for {
+  name &lt;- IO.readLine
+  _    &lt;- IO.println(&quot;Hello, &quot; + name)
+} yield ()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+do
+  name &lt;- getLine
+  putStrLn (&quot;Hello, &quot; ++ name)&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Get name from a web request&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+fetchName.map(&quot;Hello, &quot; + _) &gt;&gt;= IO.println&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+(&quot;Hello, &quot; ++) &lt;$&gt; fetchName &gt;&gt;= putStrLn&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Handle errors&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+fetchName
+  .map(&quot;Hello, &quot; + _)
+  .handleError(_ =&gt; &quot;Error fetching name&quot;) &gt;&gt;= IO.println&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+fromRight &quot;Error fetching name&quot; &lt;$&gt;
+  tryAny ((&quot;Hello, &quot; ++) &lt;$&gt; fetchName)
+  &gt;&gt;= putStrLn
+
+tryAny :: IO a -&gt; IO (Either SomeException a)
+tryAny = try&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Connect to first working server&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+val connections =
+  List(&quot;server1&quot;, &quot;server2&quot;, &quot;server3&quot;).map(connect)
+val run =
+  findFirstSuccess(connections) &gt;&gt;= useConnection&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+def findFirstSuccess[A](xs: Iterable[IO[A]]): IO[A]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+findFirstSuccess connections &gt;&gt;= useConnection
+  where
+  connections = connect &lt;$&gt; [&quot;server1&quot;, &quot;server2&quot;, &quot;server3&quot;]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+findFirstSuccess :: [IO a] -&gt; IO a&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h4&gt;Retry on error&lt;/h4&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+retryUntilSuccess(connect(&quot;server1&quot;)) &gt;&gt;= useConnection&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;fragment&quot;&gt;&lt;code data-trim data-noescape class=&quot;haskell&quot;&gt;
+retryUntilSuccess (connect &quot;server1&quot;) &gt;&gt;= useConnection&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h4&gt;Advent of Code&lt;/h4&gt;
+&lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Scala" /><category term="Functional-Programming" /><category term="HuntFunc" /><summary type="html">Intro to Functional IO Karl Bielefeldt Have you ever seen a comment like this? Real programs need side effects, so I prefer a language that handles them well. Language A Can run side effects immediately where they are declared. Can throw and catch exceptions. Language B Can declare side effects separately from where they are run. Can easily run side effects lazily. Can store side effects in variables or collections. Many ways to compose side effects concurrently. Many alternatives for error handling. Which language better handles side effects? Hello world import cats.effect.{IO, IOApp} import cats.implicits._</summary></entry><entry><title type="html">Scala 3 for Scala Haters</title><link href="http://kbielefe.github.io/talks/2021-05-24-scala-3-for-scala-haters" rel="alternate" type="text/html" title="Scala 3 for Scala Haters" /><published>2021-05-24T00:00:00+00:00</published><updated>2021-05-24T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/scala-3-for-scala-haters</id><content type="html" xml:base="http://kbielefe.github.io/talks/2021-05-24-scala-3-for-scala-haters">&lt;section&gt;
+                    &lt;h3&gt;Scala 3 for Scala Haters&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;The syntax is too busy&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+object Main {
+  def main(args: Array[String]): Unit = {
+    val xs = List(-2, -1, 0, 1, 2)
+    val ys = List(3, 4, 5, 6, 7)
+
+    val result = for {
+      x &lt;- xs
+      y &lt;- ys
+    } yield if (x &gt; 0) x else y
+
+    result.foreach(println)
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+  @main def main =
+    val xs = List(-2, -1, 0, 1, 2)
+    val ys = List(3, 4, 5, 6, 7)
+
+    val result = for
+      x &lt;- xs
+      y &lt;- ys
+    yield if x &gt; 0 then x else y
+
+    result.foreach(println)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+                  TypeIActuallyWant with Product with Serializable&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+                  TypeIActuallyWant&lt;/code&gt;&lt;/pre&gt;
+                  &lt;aside class=&quot;notes&quot;&gt;
+                    Thanks to transparent traits, these extra traits can be
+                    suppressed during type inference, removing mental clutter.
+                  &lt;/aside&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Nulls can't be checked at compile time&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+-- [E007] Type Mismatch Error: Main.scala:2:23
+2 |  val string: String = null
+  |                       ^^^^
+  |                       Found:    Null
+  |                       Required: String&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;It doesn't make sense to check for equality between different types&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+-- Error: Main.scala:2:2
+2 |  &quot;string&quot; == 42
+  |  ^^^^^^^^^^^^^^
+  |  Values of types String and Int cannot be compared
+  |  with == or !=&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Infix operators are inconsistent&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+-- Error: Main.scala:6:7
+6 |  list combine other
+  |       ^^^^^^^
+  |Alphanumeric method combine is not declared `infix`;
+  |it should not be used as infix operator.  The operation
+  |can be rewritten automatically to `combine` under
+  | -deprecation -rewrite. Or rewrite to method syntax
+  |.combine(...) manually.&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Why do I have to use 'new' sometimes and not other times?&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+class MyClass(arg: Int)
+
+// In Scala 2, this gives error: not found: value MyClass
+// Works fine in Scala 3
+MyClass(1)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Extension methods are confusing&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape class=&quot;scala&quot;&gt;
+extension (c: Circle)
+  def circumference: Double = c.radius * math.Pi * 2&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;This is going to be another Python 2 -&gt; 3 incompatibility fiasco&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Always been compatible with Java&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Can use 3.0 libraries from 2.13 code&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Can use 2.13 libraries (except macros) from 3.0 code&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;3.0 published libraries are discouraged from depending on 2.13 libraries&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;The 2.13 standard library is the official 3.0 standard library&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Many new features are opt-in (-Yexplicit-nulls, -Ysafe-init, -language:strictEquality)&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Many removed features are only deprecated until 3.1+ (-source:future)&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;-explain and -explain-types&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;2.13 compiler supports -Xsource:3 to start migration&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;3.0 compiler has &lt;a href=&quot;https://docs.scala-lang.org/scala3/guides/migration/tooling-migration-mode.html&quot;&gt;Migration mode with rewrite&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;&lt;a href=&quot;https://docs.scala-lang.org/scala3/guides/migration/compatibility-intro.html&quot;&gt;Migration Guide&lt;/a&gt;&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Many nice things for the Scala lovers&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Intersection types&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Union types&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Type lambdas&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Match types&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Better enums&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Easier type classes&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Better conversions&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Better macros&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Performance improvements such as opaque types, inline, and @threadUnsafe&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h2&gt;Questions?&lt;/h2&gt;
+                  &lt;a href=&quot;https://dotty.epfl.ch/docs/&quot;&gt;https://dotty.epfl.ch/docs/&lt;/a&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Scala" /><category term="Architalk" /><summary type="html">Scala 3 for Scala Haters Karl Bielefeldt The syntax is too busy object Main { def main(args: Array[String]): Unit = { val xs = List(-2, -1, 0, 1, 2) val ys = List(3, 4, 5, 6, 7)</summary></entry><entry><title type="html">GitHub Tips &amp;amp; Tricks</title><link href="http://kbielefe.github.io/talks/2020-06-25-github-tips-and-tricks" rel="alternate" type="text/html" title="GitHub Tips &amp;amp; Tricks" /><published>2020-06-25T00:00:00+00:00</published><updated>2020-06-25T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/github-tips-and-tricks</id><content type="html" xml:base="http://kbielefe.github.io/talks/2020-06-25-github-tips-and-tricks">&lt;section&gt;
+  &lt;h2&gt;GitHub Tips &amp;amp; Tricks&lt;/h2&gt;
+  &lt;h4&gt;Karl Bielefeldt&lt;/h4&gt;
+  &lt;h5&gt;June 26th 2020 Tech Talk&lt;/h5&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    We all depend on GitHub, but don't use it to its full potential. Today, I'm
+    sharing some tips and tricks you might find useful to get the most out of
+    your GitHub experience.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://kbielefe.github.io/talks/&quot; target=&quot;_blank&quot;&gt;This site&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    If you didn't know, GitHub can host static web pages for you. That means
+    HTML and JavaScript only, no backend, but you can do a lot with that with
+    the help of a static site generator. I have a repo hosting the slides for
+    talks I have given, including this one. You can also set it up for hosting
+    things like the Scaladoc for your library. I even have a search feature!
+
+    Just put your generated site in the gh-pages branch. Lots of help for doing
+    this in the documentation.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/notifications&quot; target=&quot;_blank&quot;&gt;Notifications Page&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    This one I was reminded of by Chris. If you spend a lot of time on GitHub
+    anyway and are having trouble keeping up with your notifications, using this
+    page can help. This is my public GitHub notifications, so it mostly consists
+    of libraries I keep an eye on, but anything you would get an email for, such
+    as new pull requests, you can manage from this page.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/kbielefe&quot; target=&quot;_blank&quot;&gt;Status&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    This is a handy feature not so much for daily use, but if you go on vacation
+    or something while people are making changes you requested on a pull request
+    or something. You can set your status so when people interact with you on
+    GitHub, they will know you won't be able to get to something for a while.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/kbielefe/talks/actions&quot; target=&quot;_blank&quot;&gt;Actions&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    This has been one of my favorite relatively new features. It is coming to
+    Enterprise later this year. I don't know how exactly it is going to work,
+    but I've been impressed by its stability so far for my personal projects
+    like this talks site.
+
+    Here you can see I have set up an action to publish the website when I push
+    to master. This is necessary because the slides require an npm installed
+    library. A lot of sites can be made without any actions at all.
+
+    One thing I really like is the cache feature. Here the npm install takes
+    under a second, because it was restored from cache and my package-lock.json
+    did not change.
+
+    If you look at the code, you can see that there are a number of triggers
+    available, and it is a relatively simple yaml file. Unlike Jenkins, where
+    you have one Jenkinsfile, you can have multiple workflows, each with
+    different triggers. For example, if you have a repo with a website for its
+    documentation, you can create a workflow that only runs when the
+    documentation folder changes.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://help.github.com/en/packages&quot; target=&quot;_blank&quot;&gt;Packages&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Packages are not something I have personally used yet, but probably will
+    soon. Packages are basically an individual artifactory for every repo. You
+    can put docker images in there, or an npm package, or a Scala jar file, to
+    be used in actions or for creating releases, or to be used as dependencies
+    in other repos.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/kbielefe/talks/network/dependencies&quot; target=&quot;_blank&quot;&gt;Dependencies&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    GitHub can find repos of your dependencies defined in a pom.xml or
+    package-lock.json file, to create a graph, give you links to the repo, and
+    automatically create pull requests when a security vulnerability is found.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/explore&quot; target=&quot;_blank&quot;&gt;Explore&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    The explore page is like Netflix recommendations, but for source code.
+    GitHub looks at your public contributions and your stars, and brings code
+    to your attention that you might not have found otherwise.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/monix/monix/pulls?q=is%3Apr+label%3A&quot;breaking+change&quot;+is%3Aclosed&quot; target=&quot;_blank&quot;&gt;Labels&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Labels help you categorize issues and pull requests. I think this could be a
+    good replacement for things like committizen. Here's an example of monix
+    labeling breaking changes on pull requests. Labels can be read by actions to
+    perform automation. They can also be set by actions.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/monix/monix/milestone/26&quot; target=&quot;_blank&quot;&gt;Milestones&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Milestones help you track what's left in a release, or what all went into a
+    large feature. They can be linked to a pull request, and to issues. These
+    are useful for finer-grained coordination when working with a teammate.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://gist.github.com/discover&quot; target=&quot;_blank&quot;&gt;Gists&lt;/a&gt;&lt;/h3&gt;
+  &lt;script src=&quot;https://gist.github.com/kbielefe/41d987e4ac0d0f5c2ab365f8eddb097b.js&quot;&gt;&lt;/script&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Gists are a great way for exploring and discussing code that isn't
+    substantial enough to be part of a pull request yet. You can have
+    whiteboard-style discussions, and have a record of what was discussed if
+    people have questions later. They can also be embedded in other places on
+    the web, like this slide!
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/kbielefe/talks/commit/3af956a188b45a881ddbffc26db1fe42e62635f1&quot; target=&quot;_blank&quot;&gt;Commit signatures&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Have you ever wondered what the Verified means that's on some people's
+    commits? If you didn't know, there is nothing stopping you from using
+    someone else's name when you make a commit in git. The Verified means you
+    have signed the commit using gpg, which people can verify cryptographically.
+    It would be nice if GitHub gave a warning on commits that aren't signed by
+    someone who usually signs their commits.
+
+    It's not like Twitter blue checks. Anyone can get verified on GitHub. Just
+    follow the instructions.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://github.com/hannonhill/XSLT-Workbook/pull/5&quot; target=&quot;_blank&quot;&gt;Draft pull requests&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Draft pull requests are for creating a place to discuss code that you intend
+    to merge at some point, but you are not ready at the moment. It clearly
+    marks it as a work in progress, and you can set it as ready to review later.
+    Draft pull requests have all the features of a pull request, like builds
+    being run and allowing inline commenting, so they can be better than a gist
+    for code that is part of a larger product.  These are good to get very early
+    feedback, especially from someone you are collaborating with who works in a
+    different time zone.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;&lt;a href=&quot;https://help.github.com/en/github/developing-online-with-codespaces&quot; target=&quot;_blank&quot;&gt;Codespaces&lt;/a&gt;&lt;/h3&gt;
+  &lt;aside class=&quot;notes&quot;&gt;
+    Codespaces are an upcoming feature. Can't even try it on public GitHub yet
+    unless you're in the limited public beta. I highly recommend watching the
+    full demo from GitHub on this one. It's sort of like Sienna minivan in the
+    browser. Everything you need for changing code in that repo, including your
+    personal customizations for things like editor settings.
+  &lt;/aside&gt;
+&lt;/section&gt;
+&lt;section&gt;
+  &lt;h3&gt;Thank you!&lt;/h3&gt;
+&lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="GitHub" /><category term="Tech-Talk" /><summary type="html">GitHub Tips &amp;amp; Tricks Karl Bielefeldt June 26th 2020 Tech Talk We all depend on GitHub, but don't use it to its full potential. Today, I'm sharing some tips and tricks you might find useful to get the most out of your GitHub experience. This site If you didn't know, GitHub can host static web pages for you. That means HTML and JavaScript only, no backend, but you can do a lot with that with the help of a static site generator. I have a repo hosting the slides for talks I have given, including this one. You can also set it up for hosting things like the Scaladoc for your library. I even have a search feature!</summary></entry><entry><title type="html">What’s New With Scala?</title><link href="http://kbielefe.github.io/talks/2018-07-05-whats-new-with-scala" rel="alternate" type="text/html" title="What’s New With Scala?" /><published>2018-07-05T00:00:00+00:00</published><updated>2018-07-05T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/whats-new-with-scala</id><content type="html" xml:base="http://kbielefe.github.io/talks/2018-07-05-whats-new-with-scala">&lt;section&gt;
+                    &lt;h3&gt;What's New with Scala?&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;2.13 Collections&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;More consistency between lazy and strict collections.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Simpler object hierarchy.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;No more signatures like &lt;code&gt;map[B, That](f: Int =&gt; B)(implicit bf: CanBuildFrom[List[Int], B, That])&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;New more efficient &lt;code&gt;groupMap&lt;/code&gt; that combines &lt;code&gt;groupBy&lt;/code&gt; followed by &lt;code&gt;mapValues&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;New &lt;code&gt;LazyList&lt;/code&gt; instead of &lt;code&gt;Stream&lt;/code&gt;, both head and tail are lazy.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;ul&gt;
+                    &lt;li&gt;2.13.0-M4 was released the middle of May&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;2.13.0-M5 is planned for August 10th&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;What's taking so long?&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;What can I do to help?&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Tooling Improvements&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Language Server Protocol&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Build Server Protocol/Bloop&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Triplequote Hydra parallel compiler&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Scala Native&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;GraalVM&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Multi-language&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Native images&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;NBI is 22M &lt;em&gt;including&lt;/em&gt; runtime.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Compare to 55M for jars and ~200M for the jre, + OS for docker container.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Scala 3&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Due in 2020.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Scala 2.14 will be focused on migration.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;More info at &lt;a href=&quot;http://dotty.epfl.ch/docs/reference/overview.html&quot;&gt;http://dotty.epfl.ch/docs/reference/overview.html&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Dropped a lot of rarely-used or problematic features.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h4&gt;Consistency&lt;/h4&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Intersection types &lt;code&gt;A &amp; B&lt;/code&gt; replacing &lt;code&gt;A with B&lt;/code&gt;. &lt;b&gt;Commutative!&lt;/b&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Implicit function types &lt;code&gt;implicit A =&gt; B&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Dependent function types &lt;code&gt;(x: T) =&gt; x.S&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Traits can have parameters &lt;code&gt;trait T(x: S)&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Can have tuples longer than 22.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Macros based on TASTY, a more consistent interface not tied directly to compiler internals.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h4&gt;Safety&lt;/h4&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Union Types &lt;code&gt;A | B&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Mutiversal equality. Equality checks only make sense for compatible types.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Restricted implicit conversions, with simpler syntax.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Null safety. Must explicitly declare a sum type: &lt;code&gt;String | Null&lt;/code&gt;.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Effect Capabilities. Must declare effects such as null pointer exception being throwable.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Multiple levels of macros, not everything is super-powerful whitebox.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h4&gt;Ergonomics&lt;/h4&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Enums &lt;code&gt;enum Color {case Red, Green, Blue}&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Type lambdas &lt;code&gt;[X] =&gt; C[X]&lt;/code&gt;.&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Extension clauses: &lt;code&gt;extension StringOps for String { ... }&lt;/code&gt;&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h4&gt;Performance&lt;/h4&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Opaque types: &lt;code&gt;opaque type Id = String&lt;/code&gt;&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Can declare parameters as &lt;em&gt;erased&lt;/em&gt;, i.e. only used during type checking.&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h2&gt;Questions?&lt;/h2&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Scala" /><category term="Tech-Talk" /><summary type="html">What's New with Scala? Karl Bielefeldt 2.13 Collections More consistency between lazy and strict collections. Simpler object hierarchy. No more signatures like map[B, That](f: Int =&gt; B)(implicit bf: CanBuildFrom[List[Int], B, That]) New more efficient groupMap that combines groupBy followed by mapValues New LazyList instead of Stream, both head and tail are lazy. 2.13.0-M4 was released the middle of May 2.13.0-M5 is planned for August 10th What's taking so long? What can I do to help? Tooling Improvements Language Server Protocol Build Server Protocol/Bloop Triplequote Hydra parallel compiler Scala Native GraalVM Multi-language Native images NBI is 22M including runtime. Compare to 55M for jars and ~200M for the jre, + OS for docker container. Scala 3 Due in 2020. Scala 2.14 will be focused on migration. More info at http://dotty.epfl.ch/docs/reference/overview.html Dropped a lot of rarely-used or problematic features. Consistency Intersection types A &amp; B replacing A with B. Commutative! Implicit function types implicit A =&gt; B Dependent function types (x: T) =&gt; x.S Traits can have parameters trait T(x: S) Can have tuples longer than 22. Macros based on TASTY, a more consistent interface not tied directly to compiler internals. Safety Union Types A | B Mutiversal equality. Equality checks only make sense for compatible types. Restricted implicit conversions, with simpler syntax. Null safety. Must explicitly declare a sum type: String | Null. Effect Capabilities. Must declare effects such as null pointer exception being throwable. Multiple levels of macros, not everything is super-powerful whitebox. Ergonomics Enums enum Color {case Red, Green, Blue} Type lambdas [X] =&gt; C[X]. Extension clauses: extension StringOps for String { ... } Performance Opaque types: opaque type Id = String Can declare parameters as erased, i.e. only used during type checking. Questions?</summary></entry><entry><title type="html">Docker Swarm</title><link href="http://kbielefe.github.io/talks/2018-02-14-swarm" rel="alternate" type="text/html" title="Docker Swarm" /><published>2018-02-14T00:00:00+00:00</published><updated>2018-02-14T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/swarm</id><content type="html" xml:base="http://kbielefe.github.io/talks/2018-02-14-swarm">&lt;section&gt;
+                    &lt;h3&gt;Baby Steps: Docker Swarm&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;What Swarm Buys Us&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Docker managed overlay&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;DNS&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Services&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Secrets&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Similar interface to starting bare containers&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;elif self.client.api_version &lt; u'1.25':
+    container = self.client.create_container(
+        hostname=hostname,
+        image=self.container,
+        detach=True,
+        stdin_open=True,
+        tty=True,
+        name=self.name,
+        environment=environment,
+        user=user_group,
+        host_config=docker.types.HostConfig(version=self.client.api_version,
+            binds=volumes,
+            links=links,
+            port_bindings=port_bindings,
+            dns=dns,
+            dns_search=dns_search,
+            group_add=groups,
+            cap_add=cap_add,
+            **resource_limits
+        )
+    )
+else:
+    dns_config = docker.types.DNSConfig(nameservers=dns, search=dns_search)
+    mapped_volumes = [docker.types.Mount(source=k, target=v.values()[0] if isinstance(v, dict) else v, type=v.keys()[0] if isinstance(v, dict) else &quot;bind&quot;) for k, v in volumes.items()]
+    container_spec = docker.types.ContainerSpec(
+        image=self.container,
+        hostname=hostname,
+        user=user_group,
+        mounts=mapped_volumes,
+        groups=groups,
+        tty=True,
+        open_stdin=True,
+        dns_config=dns_config,
+        env=environment
+    )
+    task_template = docker.types.TaskTemplate(container_spec)
+    int_port_bindings = {int(k): int(v) for k, v in port_bindings.items()}
+    endpoint_spec = docker.types.EndpointSpec(ports=int_port_bindings)
+    service = self.client.create_service(task_template, name=self.name, endpoint_spec=endpoint_spec, networks=['mcp'])&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;What I accomplished in a couple afternoons&lt;/h3&gt;
+                  &lt;ul&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Manually upgraded docker to version 18.02.0-ce in an MCP VM&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Learned sshfs to speed up node admin and dockhand hacking on remote systems&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Modified dockhand to start services instead of bare containers&lt;/li&gt;
+                    &lt;li class=&quot;fragment&quot;&gt;Manually got a service working with docker's overlay network&lt;/li&gt;
+                  &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h1&gt;Questions?&lt;/h1&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Docker" /><category term="Swarm" /><category term="Orchestration" /><category term="Tech-Talk" /><summary type="html">Baby Steps: Docker Swarm Karl Bielefeldt What Swarm Buys Us Docker managed overlay DNS Services Secrets Similar interface to starting bare containers elif self.client.api_version What I accomplished in a couple afternoons Manually upgraded docker to version 18.02.0-ce in an MCP VM Learned sshfs to speed up node admin and dockhand hacking on remote systems Modified dockhand to start services instead of bare containers Manually got a service working with docker's overlay network Questions?</summary></entry><entry><title type="html">Circe</title><link href="http://kbielefe.github.io/talks/2017-11-29-circe" rel="alternate" type="text/html" title="Circe" /><published>2017-11-29T00:00:00+00:00</published><updated>2017-11-29T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/circe</id><content type="html" xml:base="http://kbielefe.github.io/talks/2017-11-29-circe">&lt;section&gt;
+                    &lt;h3&gt;Circe: JSON in Scala without all the boilerplate&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;The problem&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// AAA ModelDefs.scala
+implicit val GroupFormat = lazyFormat(jsonFormat3(Group))
+implicit val AuthRequestFormat = lazyFormat(jsonFormat2(AuthRequest))
+implicit val TokenMapFormat = lazyFormat(jsonFormat2(TokenMap))
+implicit val TokenFormat = lazyFormat(jsonFormat1(Token))
+implicit val GroupsFormat = lazyFormat(jsonFormat1(Groups))
+implicit val UserPropsFormat = lazyFormat(jsonFormat9(UserProps))
+implicit val listGroupsFormatFormat = lazyFormat(listFormat[Groups])
+implicit val ModPermissionFormat = lazyFormat(jsonFormat2(ModPermission))
+implicit val listModPermission = lazyFormat(listFormat[ModPermission])
+implicit val ModuleFormat = lazyFormat(jsonFormat1(Module))
+implicit val ErrorFormat = lazyFormat(jsonFormat1(Error))
+implicit val TokenMsgFormat = lazyFormat(jsonFormat2(TokenMsg))
+implicit val ResetPasswordReqFormat = lazyFormat(jsonFormat3(ResetPasswordReq))
+implicit val PaswdExpiryFormat = lazyFormat(jsonFormat1(PaswdExpiry))
+implicit val PaswdNoticeFormat = lazyFormat(jsonFormat1(PaswdNotice))
+implicit val AaaConfigFormat = lazyFormat(jsonFormat2(AaaConfig))
+implicit val TimePeriodFormat = lazyFormat(jsonFormat2(TimePeriod))
+implicit val AccountingLogRequestFormat = lazyFormat(jsonFormat2(AccountingLogRequest))
+implicit val AccountingLogResultFormat = lazyFormat(jsonFormat7(AccountingLogResult))
+implicit val UserRequestFormat = lazyFormat(jsonFormat1(UserRequest))
+implicit val UserPermissionsFormat = lazyFormat(jsonFormat1(UserPermissions))
+implicit val AaaConfigRespFormat = lazyFormat(jsonFormat13(AaaConfigResp))&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Parsing&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;import io.circe._, io.circe.parser._
+
+val rawJson = &quot;&quot;&quot;
+{
+  &quot;name&quot;: &quot;group name&quot;,
+  &quot;permissions&quot;: [&quot;readSomething&quot;,&quot;writeSomething&quot;],
+  &quot;domains&quot;: [&quot;adtran&quot;]
+}
+&quot;&quot;&quot;
+
+val parseResult = parse(rawJson)
+parseResult foreach println
+/*
+Right({
+  &quot;name&quot; : &quot;group name&quot;,
+  &quot;permissions&quot; : [
+    &quot;readSomething&quot;,
+    &quot;writeSomething&quot;
+  ],
+  &quot;domains&quot; : [
+    &quot;adtran&quot;
+  ]
+})
+*/&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;/*
+{
+  &quot;name&quot;: &quot;group name&quot;,
+  &quot;permissions&quot;: [&quot;readSomething&quot;,&quot;writeSomething&quot;],
+  &quot;domains&quot;: [&quot;adtran&quot;]
+}
+*/
+
+json.hcursor.downField(&quot;permissions&quot;).downArray.as[String]
+// Right(readSomething)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;import io.circe.optics.JsonPath._
+
+val permissions = root.permissions.each.string
+val getFirstPermission = permissions.headOption _
+val getAllPermissions = permissions.getAll _
+
+getFirstPermission(json)
+// Some(readSomething)
+getAllPermissions(json)
+// List(readSomething, writeSomething)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Case Classes&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;import io.circe.generic.auto._
+case class Group(
+  name: String,
+  permissions: List[String],
+  domains: List[String])
+
+val group = json.as[Group]
+// Right(Group(group name,List(readSomething, writeSomething),List(adtran)))
+
+group.right.get.asJson
+/*
+{
+  &quot;name&quot; : &quot;group name&quot;,
+  &quot;permissions&quot; : [
+    &quot;readSomething&quot;,
+    &quot;writeSomething&quot;
+  ],
+  &quot;domains&quot; : [
+    &quot;adtran&quot;
+  ]
+}
+*/&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Inheritance&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;import io.circe.generic.JsonCodec
+case class RadiusAuth(host: String, auth_port: Int,
+  accounting_port: Int, timeout: Int, shared_secret: String)
+
+case class TacacsPlusAuth(host: String, auth_port: Int,
+  timeout: Int, shared_secret: String,
+  single_connect: Boolean)
+
+@JsonCodec sealed trait AuthMethod
+
+case class TacacsplusAuthMethod(name: String, retry_times: Int,
+  tacacsplus: TacacsPlusAuth) extends AuthMethod
+
+case class RadiusAuthMethod(name: String, retry_times: Int,
+  radius: RadiusAuth) extends AuthMethod
+
+object AuthMethod&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val auth: AuthMethod = RadiusAuthMethod(&quot;name&quot;, 0,
+  RadiusAuth(&quot;host&quot;, 0, 0, 0, &quot;secret&quot;))
+
+val json = auth.asJson
+/*
+{
+  &quot;RadiusAuthMethod&quot; : {
+    &quot;name&quot; : &quot;name&quot;,
+    &quot;retry_times&quot; : 0,
+    &quot;radius&quot; : {
+      &quot;host&quot; : &quot;host&quot;,
+      &quot;auth_port&quot; : 0,
+      &quot;accounting_port&quot; : 0,
+      &quot;timeout&quot; : 0,
+      &quot;shared_secret&quot; : &quot;secret&quot;
+    }
+  }
+}
+*/
+
+json.as[AuthMethod]
+// Right(RadiusAuthMethod(name, 0, RadiusAuth(host,0,0,0,secret)))&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;//spray-json
+implicit object AuthMethodFormats extends JsonFormat[AuthMethod] {
+  def write(obj: AuthMethod): JsValue = JsString(obj.toString())
+
+  def read(json: JsValue): AuthMethod = json match {
+    case obj: JsObject if obj.getFields(&quot;radius&quot;).nonEmpty =&gt;
+      obj.convertTo[RadiusAuthMethod]
+
+    case obj: JsObject if obj.getFields(&quot;tacacsplus&quot;).nonEmpty =&gt;
+      obj.convertTo[TacacsplusAuthMethod]
+
+    case _ =&gt; UnknownAuthMethod()
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h3&gt;Custom Codecs&lt;/h3&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val df = DateFormat.getDateTimeInstance
+
+// spray-json
+implicit object DateStringFormat extends JsonFormat[Date] {
+  def write(obj: Date): JsValue = JsString(df format obj)
+
+  def read(json: JsValue): Date = json match {
+    case JsString(string) =&gt; Try(df.parse(string)) recover {
+        case e =&gt; deserializationError(e.getMessage)}
+    case _ =&gt; deserializationError(&quot;Expected DateTime as JsString&quot;)
+  }
+}
+
+// circe
+implicit val encodeDate = Encoder.encodeString.contramap[Date](df format _)
+
+implicit val decodeDate = Decoder.decodeString.emapTry[Date](string =&gt;
+  Try(df.parse(string)))&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h1&gt;Thank you&lt;/h1&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Scala" /><category term="Circe" /><category term="JSON" /><category term="Tech-Talk" /><summary type="html">Circe: JSON in Scala without all the boilerplate Karl Bielefeldt The problem // AAA ModelDefs.scala implicit val GroupFormat = lazyFormat(jsonFormat3(Group)) implicit val AuthRequestFormat = lazyFormat(jsonFormat2(AuthRequest)) implicit val TokenMapFormat = lazyFormat(jsonFormat2(TokenMap)) implicit val TokenFormat = lazyFormat(jsonFormat1(Token)) implicit val GroupsFormat = lazyFormat(jsonFormat1(Groups)) implicit val UserPropsFormat = lazyFormat(jsonFormat9(UserProps)) implicit val listGroupsFormatFormat = lazyFormat(listFormat[Groups]) implicit val ModPermissionFormat = lazyFormat(jsonFormat2(ModPermission)) implicit val listModPermission = lazyFormat(listFormat[ModPermission]) implicit val ModuleFormat = lazyFormat(jsonFormat1(Module)) implicit val ErrorFormat = lazyFormat(jsonFormat1(Error)) implicit val TokenMsgFormat = lazyFormat(jsonFormat2(TokenMsg)) implicit val ResetPasswordReqFormat = lazyFormat(jsonFormat3(ResetPasswordReq)) implicit val PaswdExpiryFormat = lazyFormat(jsonFormat1(PaswdExpiry)) implicit val PaswdNoticeFormat = lazyFormat(jsonFormat1(PaswdNotice)) implicit val AaaConfigFormat = lazyFormat(jsonFormat2(AaaConfig)) implicit val TimePeriodFormat = lazyFormat(jsonFormat2(TimePeriod)) implicit val AccountingLogRequestFormat = lazyFormat(jsonFormat2(AccountingLogRequest)) implicit val AccountingLogResultFormat = lazyFormat(jsonFormat7(AccountingLogResult)) implicit val UserRequestFormat = lazyFormat(jsonFormat1(UserRequest)) implicit val UserPermissionsFormat = lazyFormat(jsonFormat1(UserPermissions)) implicit val AaaConfigRespFormat = lazyFormat(jsonFormat13(AaaConfigResp)) Parsing import io.circe._, io.circe.parser._</summary></entry><entry><title type="html">Intro to Kubernetes</title><link href="http://kbielefe.github.io/talks/2017-10-12-intro-to-kubernetes" rel="alternate" type="text/html" title="Intro to Kubernetes" /><published>2017-10-12T00:00:00+00:00</published><updated>2017-10-12T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/intro-to-kubernetes</id><content type="html" xml:base="http://kbielefe.github.io/talks/2017-10-12-intro-to-kubernetes">&lt;section&gt;
+                    &lt;h3&gt;Intro to Kubernetes&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                    &lt;aside class=&quot;notes&quot;&gt;
+                        Docker class Saturday morning 9:30am in ballroom 2
+                    &lt;/aside&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Agenda&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Why use Kubernetes?&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;What is an orchestrator?&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Kubernetes compared to other orchestrators&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Picking a Kubernetes distribution&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Kubernetes concepts&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Demo&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;&amp;ldquo;Kubernetes is for when you need massive scale&amp;rdquo;&lt;/h3&gt;
+                    --Random &amp;ldquo;helpful&amp;rdquo; people on the Internet
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;Rolling upgrades&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Health checks&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Capacity management&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;a/b testing&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;matching dev/test environments to production&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;hardware failures and upgrades&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;logging&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;metrics&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Orchestrators continuously monitor and reallocate resources to nodes based on health checks and constraints&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Primary resources managed by orchestrators:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;Processes&lt;/li&gt;
+                        &lt;li&gt;Docker containers&lt;/li&gt;
+                        &lt;li&gt;Virtual Machines&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Primary resources managed by orchestrators:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;&lt;strike&gt;Processes&lt;/strike&gt;&lt;/li&gt;
+                        &lt;li&gt;Docker containers (and rkt and windows server)&lt;/li&gt;
+                        &lt;li&gt;&lt;strike&gt;Virtual Machines&lt;/strike&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Secondary resources managed by orchestrators:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Secrets&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Service Discovery&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Storage&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Networking&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Logging&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Access Control&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Configuration&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;What makes Kubernetes unique?&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Highly configurable&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Master-node architecture&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Many tailored workload types&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;One IP address per pod&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;em&gt;Very&lt;/em&gt; rapidly moving&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Different knowledge needed for development, operation, and administration&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Distributions&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Kubernetes Distributions&lt;/h3&gt;
+                    &lt;a href=&quot;https://kubernetes.io/docs/setup/pick-right-solution/&quot;&gt;https://kubernetes.io/docs/setup/pick-right-solution/&lt;/a&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Local machine&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Hosted&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Turnkey Cloud&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Custom&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Universal (kubeadm)&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Cloud&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;On-Premises VMs&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Bare Metal&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Integrations&lt;/li&gt;
+                    &lt;/ul&gt;
+                    &lt;aside class=&quot;notes&quot;&gt;
+                        OpenShift class from 11:30am this morning in ballroom 4
+                        falls under the Hosted category, although on the open
+                        source side there's also a minishift version for local
+                        machine and an on-premises VM solution.
+                    &lt;/aside&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Search around&lt;/h3&gt;
+                        &lt;ul&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;&lt;a href=&quot;https://github.com/apprenda/kismatic&quot;&gt;Kismatic&lt;/a&gt;&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;&lt;a href=&quot;http://labs.play-with-k8s.com&quot;&gt;labs.play-with-k8s.com&lt;/a&gt;&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;&lt;a href=&quot;https://github.com/kelseyhightower/nomad-on-kubernetes&quot;&gt;@kelseyhightower's Nomad on Kubernetes tutorial&lt;/a&gt;&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;&lt;a href=&quot;http://rancher.com&quot;&gt;Rancher.com&lt;/a&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Pods&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Fundamental unit of Kubernetes&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Group of tightly-coupled containers scheduled together on same node&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Most often a single container&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Unique IP address&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Shared storage&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Almost never created directly by the operator&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Controllers&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Replication Controllers&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Replica Sets&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Deployments&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Stateful Sets&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Daemon Sets&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Jobs&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Cron Jobs&lt;/li&gt;
+                    &lt;/ul&gt;
+                    &lt;aside class=&quot;notes&quot;&gt;
+                        Uses for Daemon Sets:
+                        &lt;ul&gt;
+                            &lt;li&gt;running storage daemons&lt;/li&gt;
+                            &lt;li&gt;running logs collection daemons&lt;/li&gt;
+                            &lt;li&gt;running monitoring daemons&lt;/li&gt;
+                            &lt;li&gt;running a registry&lt;/li&gt;
+                        &lt;/ul&gt;
+                        Cron jobs should be idempotent
+                    &lt;/aside&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Services&lt;/h3&gt;
+                        &lt;ul&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;ClusterIP&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;NodePort&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;LoadBalancer&lt;/li&gt;
+                            &lt;li class=&quot;fragment&quot;&gt;ExternalName&lt;/li&gt;
+                        &lt;/ul&gt;
+                        &lt;aside class=&quot;notes&quot;&gt;NodePort default range is 30000-32767&lt;/aside&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Volumes&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Volumes&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Persistent Volumes&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Persistent Volume Claims&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Demo&lt;/h3&gt;
+                    &lt;a href=&quot;&quot;&gt;&lt;/a&gt;&lt;br/&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Kubernetes" /><category term="Orchestration" /><category term="DevSpace" /><summary type="html">Intro to Kubernetes Karl Bielefeldt Docker class Saturday morning 9:30am in ballroom 2 Agenda Why use Kubernetes? What is an orchestrator? Kubernetes compared to other orchestrators Picking a Kubernetes distribution Kubernetes concepts Demo &amp;ldquo;Kubernetes is for when you need massive scale&amp;rdquo; --Random &amp;ldquo;helpful&amp;rdquo; people on the Internet Rolling upgrades Health checks Capacity management a/b testing matching dev/test environments to production hardware failures and upgrades logging metrics Orchestrators continuously monitor and reallocate resources to nodes based on health checks and constraints Primary resources managed by orchestrators: Processes Docker containers Virtual Machines Primary resources managed by orchestrators: Processes Docker containers (and rkt and windows server) Virtual Machines Secondary resources managed by orchestrators: Secrets Service Discovery Storage Networking Logging Access Control Configuration What makes Kubernetes unique? Highly configurable Master-node architecture Many tailored workload types One IP address per pod Very rapidly moving Different knowledge needed for development, operation, and administration Distributions Kubernetes Distributions https://kubernetes.io/docs/setup/pick-right-solution/ Local machine Hosted Turnkey Cloud Custom Universal (kubeadm) Cloud On-Premises VMs Bare Metal Integrations OpenShift class from 11:30am this morning in ballroom 4 falls under the Hosted category, although on the open source side there's also a minishift version for local machine and an on-premises VM solution. Search around Kismatic labs.play-with-k8s.com @kelseyhightower's Nomad on Kubernetes tutorial Rancher.com Pods Fundamental unit of Kubernetes Group of tightly-coupled containers scheduled together on same node Most often a single container Unique IP address Shared storage Almost never created directly by the operator Controllers Replication Controllers Replica Sets Deployments Stateful Sets Daemon Sets Jobs Cron Jobs Uses for Daemon Sets: running storage daemons running logs collection daemons running monitoring daemons running a registry Cron jobs should be idempotent Services ClusterIP NodePort LoadBalancer ExternalName NodePort default range is 30000-32767 Volumes Volumes Persistent Volumes Persistent Volume Claims Demo</summary></entry><entry><title type="html">Intro to Scheduling with Nomad</title><link href="http://kbielefe.github.io/talks/2017-09-08-nomad" rel="alternate" type="text/html" title="Intro to Scheduling with Nomad" /><published>2017-09-08T00:00:00+00:00</published><updated>2017-09-08T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/nomad</id><content type="html" xml:base="http://kbielefe.github.io/talks/2017-09-08-nomad">&lt;section&gt;
+                    &lt;h3&gt;Intro to Scheduling with Nomad&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Agenda&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;What is a scheduler?&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Nomad compared to other schedulers&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Demo&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;[servers:children]
+DC1
+DC2
+
+[DC1]
+10.1.1.101 node_num=1 roles='[&quot;osa-cp&quot;, &quot;dnsmasq&quot;, &quot;zookeeper&quot;, &quot;cassandra&quot;, &quot;kafka&quot;]'
+10.1.1.102 node_num=2 roles='[&quot;pmaa&quot;]'
+10.1.1.103 node_num=3 roles='[&quot;osa-cp&quot;, &quot;dnsmasq&quot;, &quot;zookeeper&quot;, &quot;cassandra&quot;, &quot;kafka&quot;]'
+
+[DC1:vars]
+node_availability=available
+
+[DC2]
+10.1.2.104 node_num=4 roles='[&quot;osa-cp&quot;, &quot;dnsmasq&quot;, &quot;zookeeper&quot;, &quot;cassandra&quot;, &quot;kafka&quot;]'
+10.1.2.105 node_num=5 roles='[&quot;pmaa&quot;]'
+10.1.2.106 node_num=6 roles='[&quot;osa-cp&quot;, &quot;dnsmasq&quot;, &quot;zookeeper&quot;, &quot;cassandra&quot;, &quot;kafka&quot;]'
+
+[DC2:vars]
+node_availability=unavailable
+
+[admin]
+localhost ansible_connection=local&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;center&quot;&gt;
+                    &lt;h3&gt;&lt;em&gt;Schedulers&lt;/em&gt; allocate &lt;em&gt;resources&lt;/em&gt; to nodes based on &lt;em&gt;constraints&lt;/em&gt;&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;center&quot;&gt;
+                    &lt;h3&gt;Schedulers &lt;em&gt;monitor and reallocate&lt;/em&gt; resources to nodes based on &lt;em&gt;health checks&lt;/em&gt; and constraints&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Primary resources managed by schedulers:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;Processes&lt;/li&gt;
+                        &lt;li&gt;Docker containers&lt;/li&gt;
+                        &lt;li&gt;Virtual Machines&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Secondary resources managed by schedulers:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Secrets&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Service Discovery&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Storage&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Networking&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Logging&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Access Control&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Configuration&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;What makes Nomad unique?&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Unix philosophy&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Cross-platform and not just docker&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Operationally simple&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Easy multi-datacenter&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Gradual migration path&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Bin packing&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Plan&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Demo&lt;/h3&gt;
+                    &lt;a href=&quot;https://www.nomadproject.iO&quot;&gt;https://www.nomadproject.io&lt;/a&gt;&lt;br/&gt;
+                    &lt;a href=&quot;https://www.consul.iO&quot;&gt;https://www.consul.io&lt;/a&gt;&lt;br/&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Orchestration" /><category term="Nomad" /><category term="Tech-Talk" /><summary type="html">Intro to Scheduling with Nomad Karl Bielefeldt Agenda What is a scheduler? Nomad compared to other schedulers Demo [servers:children] DC1 DC2</summary></entry><entry><title type="html">Fun With Functors</title><link href="http://kbielefe.github.io/talks/2017-07-19-fun-with-functors" rel="alternate" type="text/html" title="Fun With Functors" /><published>2017-07-19T00:00:00+00:00</published><updated>2017-07-19T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/fun-with-functors</id><content type="html" xml:base="http://kbielefe.github.io/talks/2017-07-19-fun-with-functors">&lt;section&gt;
+                    &lt;h3&gt;Fun with Functors&lt;/h3&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Lists&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in&amp;nbsp;&amp;nbsp;= List(1, 2, 3)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out = List(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;in map {_.toString}&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Options&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in: Option[Int] = None&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out = None&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in&amp;nbsp;&amp;nbsp;= Some(1)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out = Some(&quot;1&quot;)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;in map {_.toString}&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Eithers&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in: Either[Exception,Int] = Left(new Exception())&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out = Left(new Exception())&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in&amp;nbsp;&amp;nbsp;= Right(1)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out = Right(&quot;1&quot;)&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;in map {_.toString}&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Functions&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in = (x: Int) =&gt; x + 1&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val out =&lt;br/&gt;&amp;nbsp;&amp;nbsp;(x: Int) =&gt; (x + 1).toString&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;in map {_.toString}&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Referring to them together?&lt;/h3&gt;
+                    &lt;h2 class=&quot;fragment&quot;&gt;Mappable&lt;/h2&gt;
+                &lt;/section&gt;
+                &lt;section data-transition=&quot;slide-in none-out&quot;&gt;
+                    &lt;h3 style=&quot;vertical-align: middle; text-decoration: line-through&quot;&gt;Mappable&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section data-transition=&quot;none-in slide-out&quot;&gt;
+                    &lt;h3 style=&quot;vertical-align: middle&quot;&gt;Functor&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Tree[A]&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;def map[B](f: (A) =&gt; B): Tree[B] = ???&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;def map[B](f: (A) =&gt; B): Tree[B] = Tree.empty[B]&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Functor Laws&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;in map identity == in&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;(f compose g).map ==&lt;br/&gt;f.map compose g.map&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;What are they good for?&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val in = Future.successful(List(Some(1), None, Some(3)))&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;val futListOpt = Functor[Future] compose Functor[List] compose Functor[Option]&lt;/code&gt;&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;&lt;code&gt;futListOpt.map(in)(_.toString)&lt;/code&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h1&gt;Thank you&lt;/h1&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Functional-Programming" /><category term="Functors" /><category term="Tech-Talk" /><summary type="html">Fun with Functors Karl Bielefeldt Lists val in&amp;nbsp;&amp;nbsp;= List(1, 2, 3) val out = List(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;) in map {_.toString} Options val in: Option[Int] = None val out = None val in&amp;nbsp;&amp;nbsp;= Some(1) val out = Some(&quot;1&quot;) in map {_.toString} Eithers val in: Either[Exception,Int] = Left(new Exception()) val out = Left(new Exception()) val in&amp;nbsp;&amp;nbsp;= Right(1) val out = Right(&quot;1&quot;) in map {_.toString} Functions val in = (x: Int) =&gt; x + 1 val out =&amp;nbsp;&amp;nbsp;(x: Int) =&gt; (x + 1).toString in map {_.toString} Referring to them together? Mappable Mappable Functor Tree[A] def map[B](f: (A) =&gt; B): Tree[B] = ??? def map[B](f: (A) =&gt; B): Tree[B] = Tree.empty[B] Functor Laws in map identity == in (f compose g).map ==f.map compose g.map What are they good for? val in = Future.successful(List(Some(1), None, Some(3))) val futListOpt = Functor[Future] compose Functor[List] compose Functor[Option] futListOpt.map(in)(_.toString) Thank you</summary></entry><entry><title type="html">Principles of Clean Functional Programming</title><link href="http://kbielefe.github.io/talks/2017-03-21-clean-fp" rel="alternate" type="text/html" title="Principles of Clean Functional Programming" /><published>2017-03-21T00:00:00+00:00</published><updated>2017-03-21T00:00:00+00:00</updated><id>http://kbielefe.github.io/talks/clean-fp</id><content type="html" xml:base="http://kbielefe.github.io/talks/2017-03-21-clean-fp">&lt;section&gt;
+                    &lt;p&gt;Principles of Clean Functional Programming&lt;/p&gt;
+                    &lt;p&gt;Karl Bielefeldt&lt;/p&gt;
+                    &lt;p&gt;&lt;small&gt;&lt;a href=&quot;https://youtu.be/AgntY6UlIPQ&quot;&gt;LambdaConf 2017 video&lt;/a&gt;&lt;/small&gt;&lt;/p&gt;
+                    &lt;p&gt;&lt;small&gt;@softwarewhys&lt;/small&gt;&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;About me:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Embedded progammer roots&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Microservices platform future&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Agenda&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;General Tips&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Principles you already know from imperative programming&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Principles specific to functional programming&lt;/li&gt;
+                            &lt;ul&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;General&lt;/li&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;Iteration&lt;/li&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;Opportunities from immutability&lt;/li&gt;
+                            &lt;/ul&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Notes:&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Not hard and fast rules&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Examples are for readability&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;This talk only shows &lt;i&gt;what&lt;/i&gt; to do, not &lt;i&gt;how&lt;/i&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;General Tips&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Don't stick with your first draft.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Build your repetoire of functions.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Don't forget to practice the &quot;easy&quot; parts.&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h1&gt;Principles from imperative programming&lt;/h1&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                        &lt;h3&gt;Don't repeat yourself&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// http://stackoverflow.com/q/36413148/389146
+var typeName: String = &quot;&quot;
+if (stringTypes.contains(label)) {
+  typeName = &quot;string&quot;
+} else if (floatingTypes.contains(label)) {
+  typeName = &quot;float&quot;
+} else if (encodingTypes.contains(label)) {
+  typeName = &quot;encoding&quot;
+} else if (rangeTypes.contains(label)) {
+  typeName = &quot;range&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+        &lt;/section&gt;
+        &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val types = Map(stringTypes -&gt; &quot;string&quot;,
+        floatingTypes -&gt; &quot;float&quot;,
+        encodingTypes -&gt; &quot;encoding&quot;,
+        rangeTypes    -&gt; &quot;range&quot;)
+
+types find (_._1 contains label) map (_._2)
+    getOrElse &quot;label not found&quot;&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;More principles from imperative programming&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Don't nest excessively.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Use small functions.&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// http://softwareengineering.stackexchange.com/a/342038/3965
+const obj1 = { a:1, b:2, c:3, d:3 };
+const obj2 = { a:1, b:1, e:2, f:2, g:3, h:5 };
+
+const getXs = (obj, getX) =&gt;
+  Object.keys(obj).map(key =&gt; getX(obj)(key));
+
+const getPctSameXs = (getX, filter = vals =&gt; vals) =&gt;
+  (objA, objB) =&gt;
+    filter(getXs(objB, getX))
+      .reduce(
+        (numSame, x) =&gt;
+          getXs(objA, getX).indexOf(x) &gt; -1 ? numSame + 1 :
+            numSame, 0
+      ) / Object.keys(objA).length * 100;
+
+const pctSameKeys =
+    getPctSameXs(obj =&gt; key =&gt; key);
+const pctSameValsDups =
+    getPctSameXs(obj =&gt; key =&gt; obj[key]);
+const pctSameValsNoDups =
+    getPctSameXs(obj =&gt; key =&gt; obj[key],
+        vals =&gt; [...new Set(vals)]);
+const pctSameProps = getPctSameXs(obj =&gt; key =&gt;
+    JSON.stringify( {[key]: obj[key]} ));&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;function mapObject(obj, f) {
+  return Object.keys(obj).map(key =&gt; f(obj, key));
+}
+
+function getPercentSame(obj1, obj2, f) {
+  const mapped1 = mapObject(obj1, f);
+  const mapped2 = mapObject(obj2, f);
+  const same = mapped1.filter(x =&gt; mapped2.indexOf(x) != -1);
+  const percent = same.length / mapped1.length * 100;
+  return percent;
+}
+
+const getValues = (obj, key) =&gt; obj[key];
+const valuesWithDupsPercent =
+    getPercentSame(obj1, obj2, getValues);&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Principles specific to functional programming&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;General&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Iteration&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Opportunities from immutability&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h1&gt;General&lt;/h1&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Isolate I/O&lt;/h3&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Pure functions are easier to:&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Reorder&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Refactor&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Parallelize&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Typecheck&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Share data between&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Test&lt;/p&gt;
+                    &lt;p class=&quot;fragment&quot;&gt;Compose&lt;/p&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val conversions = List(
+  (1000, &quot;M&quot;),
+  (900,  &quot;CM&quot;),
+  (500,  &quot;D&quot;),
+  (400,  &quot;CD&quot;),
+  (100,  &quot;C&quot;),
+  (90,   &quot;XC&quot;),
+  (50,   &quot;L&quot;),
+  (40,   &quot;XL&quot;),
+  (10,   &quot;X&quot;),
+  (9,    &quot;IX&quot;),
+  (5,    &quot;V&quot;),
+  (4,    &quot;IV&quot;),
+  (1,    &quot;I&quot;))
+
+def intToRoman(number: Int): Unit = {
+  if (number == 0) {
+    println()
+  } else {
+    val (decimal, roman) =
+      (conversions dropWhile (_._1 &gt; number)).head
+
+    print(roman)
+    intToRoman(number - decimal)
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def intToRoman(number: Int): String = {
+  if (number == 0) {
+    &quot;&quot;
+  } else {
+    val (decimal, roman) =
+      (conversions dropWhile (_._1 &gt; number)).head
+
+    roman + intToRoman(number - decimal)
+  }
+}
+
+def printRoman = intToRoman _ andThen println
+&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Don't try to eliminate all intermediate variables&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// http://stackoverflow.com/a/15195230/389146
+def foo(arguments: Seq[(String, String)],
+        merges: Seq[(String, String)]) =
+{
+    val metadata: Seq[Attribute] = (arguments ++ merges)
+    .groupBy(_._1)
+    .map {
+        case (key, value) =&gt;
+            Attribute(None, key,
+                Text(value.map(_._2).mkString(&quot; &quot;) ), Null)
+    }
+
+    var result: MetaData = Null
+    for(m &lt;- metadata) result = result.append( m )
+    result
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def foo(arguments: Seq[(String, String)],
+        merges: Seq[(String, String)]) =
+  (arguments ++ merges).groupBy(_._1).map {
+    case (key, value) =&gt; Attribute(None, key,
+        Text(value.map(_._2).mkString(&quot; &quot;)), Null)
+  }.fold(Null)((soFar, attr) =&gt; soFar append attr)
+
+def foo(arguments: Seq[(String, String)], merges: Seq[(String, String)]) =
+  (arguments ++ merges).groupBy(_._1).map {
+    case (key, value) =&gt; Attribute(None, key, Text(value.map(_._2).mkString(&quot; &quot;)), Null)
+  }.fold(Null)((soFar, attr) =&gt; soFar append attr)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;type PairSeq = Seq[(String, String)]
+
+def combineText(text: PairSeq): Text =
+  Text(text.map(_._2).mkString(&quot; &quot;))
+
+def foo(arguments: PairSeq, merges: PairSeq) = {
+  val metadata = (arguments ++ merges)
+    .groupBy(_._1)
+    .map{case (key, value) =&gt;
+        Attribute(None, key, combineText(value), Null)
+    }
+
+  metadata.fold(Null)((xs, attr) =&gt; xs append attr)
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Minimize pattern matching for standard library types&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Overly general tool&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Verbose and repetitive syntax&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Easier to make error that typechecker can't catch&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Often reinventing the wheel&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    When to use pattern matching?
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When you need exhaustive matching on a sum type.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When you are extracting values on the left that are used on the right, especially complex nested extractions.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When there aren't existing more tailored functions that fit better.&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When you've written it both ways and found it significantly cleaner.&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def intToRoman(number: Int): String = {
+  if (number == 0) {
+    &quot;&quot;
+  } else {
+    val (decimal, roman) = number match {
+      case x if x &gt; 1000 =&gt; (1000, &quot;M&quot;)
+      case x if x &gt; 900  =&gt; (900,  &quot;CM&quot;)
+      case x if x &gt; 500  =&gt; (500,  &quot;D&quot;)
+      case x if x &gt; 400  =&gt; (400,  &quot;CD&quot;)
+      case x if x &gt; 100  =&gt; (100,  &quot;C&quot;)
+      case x if x &gt; 90   =&gt; (90,   &quot;XC&quot;)
+      case x if x &gt; 50   =&gt; (50,   &quot;L&quot;)
+      case x if x &gt; 40   =&gt; (40,   &quot;XL&quot;)
+      case x if x &gt; 10   =&gt; (10,   &quot;X&quot;)
+      case x if x &gt; 9    =&gt; (9,    &quot;IX&quot;)
+      case x if x &gt; 5    =&gt; (5,    &quot;V&quot;)
+      case x if x &gt; 4    =&gt; (4,    &quot;IV&quot;)
+      case _             =&gt; (1,    &quot;I&quot;)
+    }
+
+    roman + intToRoman(number - decimal)
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val conversions = List(
+      (1000, &quot;M&quot;),
+      (900,  &quot;CM&quot;),
+      (500,  &quot;D&quot;),
+      (400,  &quot;CD&quot;),
+      (100,  &quot;C&quot;),
+      (90,   &quot;XC&quot;),
+      (50,   &quot;L&quot;),
+      (40,   &quot;XL&quot;),
+      (10,   &quot;X&quot;),
+      (9,    &quot;IX&quot;),
+      (5,    &quot;V&quot;),
+      (4,    &quot;IV&quot;),
+      (1,    &quot;I&quot;))
+
+def intToRoman(number: Int): String = {
+  if (number == 0) {
+    &quot;&quot;
+  } else {
+    val (decimal, roman) =
+    (conversions dropWhile (_._1 &gt; number)).head
+
+    roman + intToRoman(number - decimal)
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Don’t overuse lambdas&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;const obj1 = { a:1, b:2, c:3, d:3 };
+const obj2 = { a:1, b:1, e:2, f:2, g:3, h:5 };
+
+const getXs = (obj, getX) =&gt;
+  Object.keys(obj).map(key =&gt; getX(obj)(key));
+
+const getPctSameXs = (getX, filter = vals =&gt; vals) =&gt;
+  (objA, objB) =&gt;
+    filter(getXs(objB, getX))
+      .reduce(
+        (numSame, x) =&gt;
+          getXs(objA, getX).indexOf(x) &gt; -1 ? numSame + 1 :
+            numSame, 0
+      ) / Object.keys(objA).length * 100;
+
+const pctSameKeys =
+    getPctSameXs(obj =&gt; key =&gt; key);
+const pctSameValsDups =
+    getPctSameXs(obj =&gt; key =&gt; obj[key]);
+const pctSameValsNoDups =
+    getPctSameXs(obj =&gt; key =&gt; obj[key],
+        vals =&gt; [...new Set(vals)]);
+const pctSameProps = getPctSameXs(obj =&gt; key =&gt;
+    JSON.stringify( {[key]: obj[key]} ));&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;function mapObject(obj, f) {
+  return Object.keys(obj).map(key =&gt; f(obj, key));
+}
+
+function getPercentSame(obj1, obj2, f) {
+  const mapped1 = mapObject(obj1, f);
+  const mapped2 = mapObject(obj2, f);
+  const same = mapped1.filter(x =&gt; mapped2.indexOf(x) != -1);
+  const percent = same.length / mapped1.length * 100;
+  return percent;
+}
+
+const getValues = (obj, key) =&gt; obj[key];
+const valuesWithDupsPercent =
+    getPercentSame(obj1, obj2, getValues);&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Don't jump out and back into monads&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val in: Option[String] = ???
+val out: Option[Int] = in match {
+  case Some(x) =&gt; Try(x.toInt).toOption
+  case None    =&gt; None
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt; Try(x.toInt).toOption}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h1&gt;Iteration&lt;/h1&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    Functional programming doesn't have imperative loops like
+                    while and for loops, so instead we usually use
+                    &lt;u&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/u&gt;.
+                &lt;/section&gt;
+                &lt;section&gt;
+                    Functional programming doesn't have imperative loops like
+                    while and for loops, so instead we usually use
+                    &lt;strike&gt;recursion&lt;/strike&gt;
+                    &lt;u&gt;higher-order functions&lt;/u&gt;.
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Try to use higher-order functions instead of recursion&lt;/h3&gt;
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Harder to reason about&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Overly general&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Easy to accidentally overflow the stack&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Easy to make too large&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Easier to make mistakes the type checker can't catch&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Often reinventing the wheel&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    When to use recursion?
+                    &lt;ul&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When you've tried it both ways and found it cleaner&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When the stop condition is complex&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When you would typically use it in imperative programming&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;When the call stack manages data that you would otherwise have to manage manually&lt;/li&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Often beneficial to use recursion to create a new higher-order function&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def intToRoman(number: Int): String = {
+  def stream = Stream.iterate((number, &quot;&quot;)){
+    case (decimal, roman) =&gt; val (decDigit, romDigit) =
+        (conversions dropWhile (_._1 &gt; decimal)).head
+    (decimal - decDigit, roman + romDigit)
+  }
+
+  stream.dropWhile(_._1 &gt; 0).map(_._2).head
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def sumToN(n: Int): Int = {
+    if (n == 0)
+        0
+    else
+        n + sumToN(n-1)
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;@scala.annotation.tailrec
+def sumToN(n: Int, acc: Int = 0): Int = {
+    if (n == 0)
+        acc
+    else
+        sumToN(n-1, acc+n)
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def sumToN(n: Int): Int = (0 to n).sum
+
+def sumToN(n: Int): Int = 0 to n reduce (_ + _)&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Don’t use loop indices unless they are referenced directly by the problem statement&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// http://stackoverflow.com/q/42306911/389146
+def pair(a: Array[Int], target: Int): Option[(Int, Int)] = {
+
+  var l = 0
+  var r = a.length - 1
+  var result: Option[(Int, Int)] = None
+  while (l &lt; r &amp;&amp; result.isEmpty) {
+    (a(l), a(r)) match {
+      case (x, y) if x + y == target =&gt; result = Some(x, y)
+      case (x, y) if x + y &lt; target =&gt; l = l + 1
+      case (x, y) if x + y &gt; target =&gt; r = r - 1
+    }
+  }
+  result
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def findSum(a: Vector[Int],
+            target: Int): Option[(Int, Int)] = {
+  def stream = Stream.iterate(a){xs =&gt;
+    if (xs.head + xs.last &gt; target)
+        xs.init
+    else
+        xs.tail
+  }
+
+  stream.take (a.size - 1)
+        .map {xs =&gt; (xs.head, xs.last)}
+        .find {case (x,y) =&gt; x + y == target}
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Look for opportunities to factor out loop structures&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;// http://stackoverflow.com/a/35051921/389146
+def getOpt(p: (Int) =&gt; Boolean): Option[Tree[Int]] = {
+  def _getOpt(tree: Tree[Int],
+              p: (Int) =&gt; Boolean): Option[Tree[Int]] = {
+    tree.children.map {t =&gt;
+        if(p(t.node))
+            Some(t)
+        else
+            t.children.map(_getOpt(_, p))
+    }
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;def depthFirstTraverse[A](tree: Tree[A]): Stream[Tree[A]] =
+  tree #:: (tree.children map depthFirstTraverse)
+  .fold(Stream.Empty)(_ ++ _)
+
+def getOpt(p: (Int) =&gt; Boolean): Option[Tree[Int]] =
+  depthFirstTraverse(tree) find {x =&gt; p(x.node)}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;h1&gt;Opportunities from immutability&lt;/h1&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Keep relationships between objects outside of the objects themselves&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;case class Room(description: String,
+                monsters: List[Monster],
+                loot: List[Loot],
+                north: Option[Room],
+                south: Option[Room],
+                east:  Option[Room],
+                west:  Option[Room])&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;case class Room(description: String,
+                monsters: List[Monster],
+                loot: List[Loot],
+                doors: List[Direction])
+
+val rooms = Map((0,0) -&gt; Room(&quot;scary room&quot;,
+                              List(scaryMonster),
+                              List(coolLoot),
+                              List(North)),
+                (0,1) -&gt; Room(&quot;fun room&quot;,
+                              List(clown),
+                              List(partyFavor),
+                              List(South,East)))&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;section&gt;
+                    &lt;h3&gt;Use small, flexible data structures and transform on demand&lt;/h3&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;case class Board(forward: Map[String, Node],
+                 reverse: Map[Node, String],
+                 occupiedSquares: List[String],
+                 nodes: List[Node])&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+&lt;pre&gt;&lt;code data-trim data-noescape&gt;val board: Map[String, Node] = ???
+val occupiedSquares = board.keySet
+...
+val occupiedInRow =
+    occupiedSquares filter {_ startsWith myRow}
+val occupiedInCol =
+    occupiedSquares filter {_ endsWith myCol}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;General Tips&lt;/p&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Principles you already know from imperative programming&lt;/p&gt;
+                        &lt;li class=&quot;fragment&quot;&gt;Principles specific to functional programming&lt;/p&gt;
+                            &lt;ul&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;General&lt;/li&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;Iteration&lt;/li&gt;
+                                &lt;li class=&quot;fragment&quot;&gt;Immutability&lt;/li&gt;
+                            &lt;/ul&gt;
+                    &lt;/ul&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                &lt;/section&gt;
+                &lt;section&gt;
+                  &lt;h1&gt;Questions?&lt;/h1&gt;
+                &lt;/section&gt;</content><author><name></name></author><category term="slides" /><category term="Functional-Programming" /><category term="Scala" /><category term="LambdaConf" /><summary type="html">Principles of Clean Functional Programming Karl Bielefeldt LambdaConf 2017 video @softwarewhys About me: Embedded progammer roots Microservices platform future Agenda General Tips Principles you already know from imperative programming Principles specific to functional programming General Iteration Opportunities from immutability Notes: Not hard and fast rules Examples are for readability This talk only shows what to do, not how General Tips Don't stick with your first draft. Build your repetoire of functions. Don't forget to practice the &quot;easy&quot; parts. Principles from imperative programming Don't repeat yourself // http://stackoverflow.com/q/36413148/389146 var typeName: String = &quot;&quot; if (stringTypes.contains(label)) { typeName = &quot;string&quot; } else if (floatingTypes.contains(label)) { typeName = &quot;float&quot; } else if (encodingTypes.contains(label)) { typeName = &quot;encoding&quot; } else if (rangeTypes.contains(label)) { typeName = &quot;range&quot; } val types = Map(stringTypes -&gt; &quot;string&quot;, floatingTypes -&gt; &quot;float&quot;, encodingTypes -&gt; &quot;encoding&quot;, rangeTypes -&gt; &quot;range&quot;)</summary></entry></feed>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/404.html</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/search.json</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/sitemap.xml</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/assets/css/styles.css</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/tags.html</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/assets/css/preview.css</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/node_modules/reveal.js/README.html</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/node_modules/reveal.js/css/theme/README.html</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/node_modules/reveal.js/css/theme/</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/feed.xml</loc>
+            
+                <changefreq>monthly</changefreq>
+                <priority>0.5</priority>
+            
+        </url>
+    
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2022-11-10-intro-to-functional-io</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2022-11-10</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2021-05-24-scala-3-for-scala-haters</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2021-05-24</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2020-06-25-github-tips-and-tricks</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2020-06-25</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2018-07-05-whats-new-with-scala</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2018-07-05</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2018-02-14-swarm</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2018-02-14</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2017-11-29-circe</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2017-11-29</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2017-10-12-intro-to-kubernetes</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2017-10-12</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2017-09-08-nomad</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2017-09-08</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2017-07-19-fun-with-functors</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2017-07-19</lastmod>
+        </url>
+    
+        <url>
+            <loc>http://kbielefe.github.io/talks/2017-03-21-clean-fp</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>2017-03-21</lastmod>
+        </url>
+    
+    
+</urlset>

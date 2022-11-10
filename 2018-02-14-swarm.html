@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    <title>Docker Swarm | Karl's Talks</title>
+    <meta name="description" content="An introduction to Docker Swarm as a baby step toward more complex orchestrators.">
+    
+        <meta name="keywords" content="Docker, Swarm, Orchestration, Tech-Talk">
+    
+
+    <!-- Social: Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Docker Swarm | Karl's Talks">
+    <meta name="twitter:description" content="An introduction to Docker Swarm as a baby step toward more complex orchestrators.">
+    <meta property="twitter:image:src" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    
+        <meta name="twitter:site" content="@softwarewhys">
+    
+
+    <!-- Social: Facebook / Open Graph -->
+    <meta property="og:url" content="http://kbielefe.github.io/talks/2018-02-14-swarm">
+    <meta property="og:title" content="Docker Swarm | Karl's Talks">
+    <meta property="og:image" content="http://kbielefe.github.io/talks/assets/img/blog-image.png">
+    <meta property="og:description" content="An introduction to Docker Swarm as a baby step toward more complex orchestrators.">
+    <meta property="og:site_name" content="Karl's Talks">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/talks/favicon.ico" type="image/x-icon" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/talks/assets/img/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icons/apple-touch-icon-152x152.png" />
+
+    <!-- Windows 8 Tile Icons -->
+    <meta name="application-name" content="Karl's Talks">
+    <meta name="msapplication-TileColor" content="#141414">
+    <meta name="msapplication-square70x70logo" content="smalltile.png" />
+    <meta name="msapplication-square150x150logo" content="mediumtile.png" />
+    <meta name="msapplication-wide310x150logo" content="widetile.png" />
+    <meta name="msapplication-square310x310logo" content="largetile.png" />
+    
+    <!-- Android Lolipop Theme Color -->
+    <meta name="theme-color" content="#141414">
+
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="/talks/node_modules/reveal.js/dist/theme/black.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        				<section>
+                    <h3>Baby Steps: Docker Swarm</h3>
+                    <p>Karl Bielefeldt</p>
+                </section>
+                <section>
+                  <h3>What Swarm Buys Us</h3>
+                  <ul>
+                    <li class="fragment">Docker managed overlay</li>
+                    <li class="fragment">DNS</li>
+                    <li class="fragment">Services</li>
+                    <li class="fragment">Secrets</li>
+                    <li class="fragment">Similar interface to starting bare containers</li>
+                  </ul>
+                </section>
+                <section>
+<pre><code data-trim data-noescape>elif self.client.api_version < u'1.25':
+    container = self.client.create_container(
+        hostname=hostname,
+        image=self.container,
+        detach=True,
+        stdin_open=True,
+        tty=True,
+        name=self.name,
+        environment=environment,
+        user=user_group,
+        host_config=docker.types.HostConfig(version=self.client.api_version,
+            binds=volumes,
+            links=links,
+            port_bindings=port_bindings,
+            dns=dns,
+            dns_search=dns_search,
+            group_add=groups,
+            cap_add=cap_add,
+            **resource_limits
+        )
+    )
+else:
+    dns_config = docker.types.DNSConfig(nameservers=dns, search=dns_search)
+    mapped_volumes = [docker.types.Mount(source=k, target=v.values()[0] if isinstance(v, dict) else v, type=v.keys()[0] if isinstance(v, dict) else "bind") for k, v in volumes.items()]
+    container_spec = docker.types.ContainerSpec(
+        image=self.container,
+        hostname=hostname,
+        user=user_group,
+        mounts=mapped_volumes,
+        groups=groups,
+        tty=True,
+        open_stdin=True,
+        dns_config=dns_config,
+        env=environment
+    )
+    task_template = docker.types.TaskTemplate(container_spec)
+    int_port_bindings = {int(k): int(v) for k, v in port_bindings.items()}
+    endpoint_spec = docker.types.EndpointSpec(ports=int_port_bindings)
+    service = self.client.create_service(task_template, name=self.name, endpoint_spec=endpoint_spec, networks=['mcp'])</code></pre>
+                </section>
+                <section>
+                  <h3>What I accomplished in a couple afternoons</h3>
+                  <ul>
+                    <li class="fragment">Manually upgraded docker to version 18.02.0-ce in an MCP VM</li>
+                    <li class="fragment">Learned sshfs to speed up node admin and dockhand hacking on remote systems</li>
+                    <li class="fragment">Modified dockhand to start services instead of bare containers</li>
+                    <li class="fragment">Manually got a service working with docker's overlay network</li>
+                  </ul>
+                </section>
+                <section>
+                  <h1>Questions?</h1>
+                </section>
+
+      </div>
+    </div>
+    <script src="/talks/node_modules/reveal.js/dist/reveal.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/notes/notes.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="/talks/node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        totalTime: 15 * 60,
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
+</html>

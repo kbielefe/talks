@@ -1,0 +1,85 @@
+[
+  
+  
+  
+    {
+      "title"    : "Intro to Functional IO",
+      "tags"     : "Scala, Functional-Programming, and HuntFunc",
+      "categories" : "slides",
+      "url"      : "/talks/2022-11-10-intro-to-functional-io",
+      "date"     : "11/10/2022"
+    } ,
+  
+    {
+      "title"    : "Scala 3 for Scala Haters",
+      "tags"     : "Scala and Architalk",
+      "categories" : "slides",
+      "url"      : "/talks/2021-05-24-scala-3-for-scala-haters",
+      "date"     : "05/24/2021"
+    } ,
+  
+    {
+      "title"    : "GitHub Tips &amp; Tricks",
+      "tags"     : "GitHub and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2020-06-25-github-tips-and-tricks",
+      "date"     : "06/25/2020"
+    } ,
+  
+    {
+      "title"    : "What&#39;s New With Scala?",
+      "tags"     : "Scala and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2018-07-05-whats-new-with-scala",
+      "date"     : "07/05/2018"
+    } ,
+  
+    {
+      "title"    : "Docker Swarm",
+      "tags"     : "Docker, Swarm, Orchestration, and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2018-02-14-swarm",
+      "date"     : "02/14/2018"
+    } ,
+  
+    {
+      "title"    : "Circe",
+      "tags"     : "Scala, Circe, JSON, and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2017-11-29-circe",
+      "date"     : "11/29/2017"
+    } ,
+  
+    {
+      "title"    : "Intro to Kubernetes",
+      "tags"     : "Kubernetes, Orchestration, and DevSpace",
+      "categories" : "slides",
+      "url"      : "/talks/2017-10-12-intro-to-kubernetes",
+      "date"     : "10/12/2017"
+    } ,
+  
+    {
+      "title"    : "Intro to Scheduling with Nomad",
+      "tags"     : "Orchestration, Nomad, and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2017-09-08-nomad",
+      "date"     : "09/08/2017"
+    } ,
+  
+    {
+      "title"    : "Fun With Functors",
+      "tags"     : "Functional-Programming, Functors, and Tech-Talk",
+      "categories" : "slides",
+      "url"      : "/talks/2017-07-19-fun-with-functors",
+      "date"     : "07/19/2017"
+    } ,
+  
+    {
+      "title"    : "Principles of Clean Functional Programming",
+      "tags"     : "Functional-Programming, Scala, and LambdaConf",
+      "categories" : "slides",
+      "url"      : "/talks/2017-03-21-clean-fp",
+      "date"     : "03/21/2017"
+    } 
+  
+]
