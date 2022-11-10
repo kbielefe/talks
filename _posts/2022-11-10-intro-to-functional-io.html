@@ -1,0 +1,126 @@
+---
+title: Intro to Functional IO
+description: >-
+  A talk I gave at HuntFunc to introduce IO types and what their benefits are.
+optimized_image: /talks/assets/header-images/scala.png
+category: slides
+tags:
+  - Scala
+  - Functional-Programming
+  - HuntFunc
+duration: 30
+---
+<section>
+  <h3>Intro to Functional IO</h3>
+  <p>Karl Bielefeldt</p>
+</section>
+<section>
+  <section>
+    <h3>Have you ever seen a comment like this?</h3>
+  </section>
+  <section>
+    Real programs need side effects, so I prefer a language that handles them well.
+  </section>
+  <section>
+    <h4>Language A</h4>
+    <ul>
+      <li class="fragment">Can run side effects immediately where they are declared.</li>
+      <li class="fragment">Can throw and catch exceptions.</li>
+    </ul>
+  </section>
+  <section>
+    <h4>Language B</h4>
+    <ul>
+      <li class="fragment">Can declare side effects separately from where they are run.</li>
+      <li class="fragment">Can easily run side effects lazily.</li>
+      <li class="fragment">Can store side effects in variables or collections.</li>
+      <li class="fragment">Many ways to compose side effects concurrently.</li>
+      <li class="fragment">Many alternatives for error handling.</li>
+    </ul>
+    <h4 class="fragment">Which language better handles side effects?</h4>
+  </section>
+</section>
+<section>
+  <section>
+    <h4>Hello world</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+import cats.effect.{IO, IOApp}
+import cats.implicits._
+
+object HelloWorld extends IOApp.Simple {
+  val run = IO.println("Hello, World!")
+}</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+import Data.Either
+import Control.Exception
+
+main :: IO ()
+main = putStrLn "Hello, World!"</code></pre>
+  </section>
+  <section>
+    <h4>Get input</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+IO.readLine.map("Hello, " + _) >>= IO.println</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+("Hello, " ++) <$> getLine >>= putStrLn</code></pre>
+  </section>
+  <section>
+    <h4>Another way to get input</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+for {
+  name <- IO.readLine
+  _    <- IO.println("Hello, " + name)
+} yield ()</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+do
+  name <- getLine
+  putStrLn ("Hello, " ++ name)</code></pre>
+  </section>
+  <section>
+    <h4>Get name from a web request</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+fetchName.map("Hello, " + _) >>= IO.println</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+("Hello, " ++) <$> fetchName >>= putStrLn</code></pre>
+  </section>
+  <section>
+    <h4>Handle errors</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+fetchName
+  .map("Hello, " + _)
+  .handleError(_ => "Error fetching name") >>= IO.println</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+fromRight "Error fetching name" <$>
+  tryAny (("Hello, " ++) <$> fetchName)
+  >>= putStrLn
+
+tryAny :: IO a -> IO (Either SomeException a)
+tryAny = try</code></pre>
+  </section>
+  <section>
+    <h4>Connect to first working server</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+val connections =
+  List("server1", "server2", "server3").map(connect)
+val run =
+  findFirstSuccess(connections) >>= useConnection</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+def findFirstSuccess[A](xs: Iterable[IO[A]]): IO[A]</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+findFirstSuccess connections >>= useConnection
+  where
+  connections = connect <$> ["server1", "server2", "server3"]</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+findFirstSuccess :: [IO a] -> IO a</code></pre>
+  </section>
+  <section>
+    <h4>Retry on error</h4>
+<pre class="fragment"><code data-trim data-noescape class="scala">
+retryUntilSuccess(connect("server1")) >>= useConnection</code></pre>
+<pre class="fragment"><code data-trim data-noescape class="haskell">
+retryUntilSuccess (connect "server1") >>= useConnection</code></pre>
+  </section>
+</section>
+<section>
+  <h4>Advent of Code</h4>
+</section>
